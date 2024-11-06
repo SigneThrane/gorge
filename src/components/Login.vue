@@ -10,7 +10,9 @@
     <input type="password" class="input-field">
     
     <p class="register-link">Har du ikke en bruger? <a href="#">Opret her.</a></p>
-    <button class="login-button">LOG-IN</button>
+    <router-link to="/TrendingPage">
+      <button class="login-button">LOG-IN</button>
+      </router-link>
     <p class="register-link">Har du glemt din adgangskode? <a href="#">Klik her.</a></p>
   </div>
 </body>
