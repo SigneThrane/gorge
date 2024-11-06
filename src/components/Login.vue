@@ -6,7 +6,7 @@
 
     <p>Brugernavn</p>
     <input type="text" class="input-field" >
-    <p>Kodeord</p>
+    <p>Adgangskode</p>
     <input type="password" class="input-field">
     
     <p class="register-link">Har du ikke en bruger? <a href="#">Opret her.</a></p>
