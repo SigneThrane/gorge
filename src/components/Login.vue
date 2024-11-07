@@ -9,7 +9,7 @@
     <p>Adgangskode</p>
     <input type="password" class="input-field">
     
-    <p class="register-link">Har du ikke en bruger? <a href="#">Opret her.</a></p>
+    <p class="register-link">Har du ikke en bruger?  <router-link to="/CreateAccount">Opret her.</router-link></p>
     <router-link to="/TrendingPage">
       <button class="login-button">LOG-IN</button>
       </router-link>
