@@ -1,21 +1,18 @@
 <template>
-   <header class="header">
-      <label for="menu-toggle" class="icon" @click="toggleMenu">&#9776;</label>
-      <router-link to="/TrendingPage">
-        <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
+   <div class="header">
+    <router-link to="/MediaPost">
+     <button class="back-button" onclick="goBack()"><</button>
       </router-link>
-  
-      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-      </svg>
-    </header>
-
-    <nav class="menu" v-show="menuVisible">
-      <a href="#">Styles</a>
-      <a href="#">DIY</a>
-      <a href="#">Marketplace</a>
-    </nav>
-
+  <h1 class="header-title">FREJA PETERSEN</h1>
+  <div class="header-icons">
+    <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+</svg></button>
+    <button class="icon-button" onclick="sharePage()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
+  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
+</svg></button>
+  </div>
+</div>
 <div class="backgroundcolor">
   <div class="image-container">
   <img class="post" src="/public/img/icons/placeholder2.png" alt="Centered Image" />
@@ -70,80 +67,14 @@
  
    
    <style scoped>
-   body {
+body {
   margin: 0;
   background-color: #FCF7F2;
   font-family: "Quicksand", serif;
   padding-top: 60px;
 }
 
-.bi-search {
-  cursor: pointer;
-  color: #B66B4D;
-  z-index: 1000;
-  transform: translateY(15px);
-}
-
-.icon {
-  font-size: 24px;
-  cursor: pointer;
-  color: #B66B4D;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 9999;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  color: #B66B4D;
-  position: relative;
-}
-
-.logo {
-  width: 100px;
-  height: auto;
-  margin: 0;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.menu {
-  display: none;
-  flex-direction: column;
-  background-color: white;
-  padding: 10px;
-  position: fixed;
-  top: 60px;
-  left: 0;
-  width: 100%;
-  z-index: 998;
-}
-
-.menu a {
-  color: #643C2C;
-  padding: 10px;
-  text-decoration: none;
-}
-
-.menu a:hover {
-  background-color: #643C2C;
-  color: #FCF7F2;
-}
-
-
-@media (max-width: 600px) {
-  .menu {
-    display: flex;
-  }
-}
-
-     .image-container {
-  margin-top: 4%;
+.image-container {
   display: flex;
   justify-content: center;  
   padding-top: 20px;     
@@ -159,7 +90,7 @@
 
 .crown-icon-verify{
   position: absolute;
-  top: -5%;
+  top: -4.5%;
   width: 45px; 
   height: 31px; 
   cursor: pointer; 
@@ -214,17 +145,26 @@ h1 {
 .backgroundcolor{
   background-color: #FFE0CB;
   padding: 5%;
-  margin-top: 6%;
 }
 
 .image-grid {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  gap: 10px; /* Add gap for spacing between images */
   padding: 35px;
   max-height: 70vh;
   overflow: hidden; 
+}
+
+.image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 8px; 
 }
 
 .image-grid::before {
@@ -244,11 +184,73 @@ h1 {
 
 .image {
   position: relative;
+  width: 100%;
+  padding-top: 100%; 
+  overflow: hidden; /* Ensures images don't overflow */
 }
 
 .image img {
   width: 100%;
-  border-radius: 50px;
+}
+
+.back-button {
+  color: #B66B4D;
+  cursor: pointer;
+  top: 60px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.back-button svg {
+  width: 24px; 
+  height: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background-color: #FFE0CB;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.back-button {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000000;
+}
+
+.header-title {
+  flex-grow: 0.5; 
+  text-align: center;
+  font-size: 18px;
+  margin: 0;
+  margin-left: 40px; 
+  color: black;
+}
+
+.header-icons {
+  display: flex;
+  gap: 10px;
+  margin-right: 40px; 
+}
+
+.header-icons {
+  display: flex;
+  gap: 10px;
+  margin-right: 40px; 
+}
+
+.icon-button {
+  font-size: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
    </style>
