@@ -51,6 +51,7 @@
       font-size: 24px;
       color: #BC7344;
       margin-bottom: 15px;
+      font-family: "Quicksand", serif;
     }
 
     
@@ -60,6 +61,7 @@
       color: #BC7344;
       margin-bottom: 5px;
       margin-top: 2%;
+      font-family: "Quicksand", serif;
     }
 
     .input-field {
@@ -80,6 +82,7 @@
       border: none;
       border-radius: 50px;
       cursor: pointer;
+      font-family: "Quicksand", serif;
     }
 
     .login-button:hover {
@@ -91,6 +94,7 @@
       font-size: 14px;
       color: #BC7344;
       margin-bottom: 12%;
+      font-family: "Quicksand", serif;
     }
 
     .register-link a {

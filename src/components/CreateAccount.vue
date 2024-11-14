@@ -25,8 +25,6 @@
     
     </script>
     
-    
-    
     <style scoped>
    body {
         display: flex;
@@ -54,6 +52,7 @@
         font-size: 24px;
         color: #BC7344;
         margin-bottom: 15px;
+        font-family: "Quicksand", serif;
       }
   
       
@@ -63,6 +62,7 @@
         color: #BC7344;
         margin-bottom: 5px;
         margin-top: 2%;
+        font-family: "Quicksand", serif;
       }
   
       .input-field {
@@ -72,6 +72,7 @@
         font-size: 16px;
         border: 1px solid #533F31;
         border-radius: 50px;
+        font-family: "Quicksand", serif;
       }
   
       .login-button {

@@ -1,8 +1,14 @@
 <template>
-<div class="login-container">
+  <div class="login-container">
+    <router-link to="/TrendingPage">
+      <button class="close-button" @click="closeModal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+      </svg>
+    </button>
+      </router-link>
     <h2>Opret Post</h2>
 
-    <!-- Image Upload Section -->
     <div class="upload-container">
       <label for="image-upload" class="upload-label">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
@@ -13,23 +19,29 @@
       </label>
       <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" />
     </div>
+    <div class="input-group">
+      <label>Titel</label>
+      <input type="text" class="input-field">
+      <p class="input-description">Titel til post her</p>
+    </div>
 
-    <p>Beskrivelse</p>
-    <input type="text" class="input-field">
-    <p>Æstetik</p>
-    <input type="password" class="input-field">
-    <p>Farver</p>
-    <input type="text" class="input-field">
-    <p>Materialer</p>
-    <input type="password" class="input-field">
-    <p>Mærker</p>
-    <input type="text" class="input-field">
-    <p>Tidsalder</p>
-    <input type="password" class="input-field">
-    <p>Anledninger</p>
-    <input type="text" class="input-field">
-    <p>Sæsoner</p>
-    <input type="password" class="input-field">
+    <div class="input-group">
+      <label>Beskrivelse</label>
+      <input type="text" class="input-field">
+      <p class="input-description">Beskrivelse til post her</p>
+    </div>
+
+    <div class="input-group">
+      <label>Tags</label>
+      <input type="text" class="input-field">
+      <p class="input-description">Tilføj tags her</p>
+    </div>
+
+    <div class="input-group">
+      <label>Link</label>
+      <input type="text" class="input-field">
+      <p class="input-description">Tilføj dit link her</p>
+    </div>
 
     <router-link to="/TrendingPage">
       <button class="login-button">Upload</button>
@@ -58,13 +70,13 @@
         </svg>
       </router-link>
 
-      <router-link to="/MessagesPage" class="nav-button">
+      <router-link to="/Notification" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 20">
   <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
 </svg>
       </router-link>
       
-      <router-link to="/ProfileMedia" class="nav-button">
+      <router-link to="/MyProfile" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 20">
   <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
 </svg>
@@ -76,17 +88,12 @@
 <script setup>
 import { ref } from 'vue';
 
-const menuVisible = ref(false);
 const selectedImage = ref(null);
-
-const toggleMenu = () => {
-  menuVisible.value = !menuVisible.value;
-};
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    selectedImage.value = URL.createObjectURL(file); // Creates a temporary URL for the uploaded image
+    selectedImage.value = URL.createObjectURL(file);
     console.log('Image uploaded:', file);
   }
 };
@@ -106,79 +113,82 @@ body {
   text-align: center;
   margin: 0 auto;
   position: absolute;
-  top: 50%;
+  top: 38%;
   left: 47.5%;
-  transform: translate(-50%, -40%);
+  transform: translate(-50%, -43%);
 }
 
 h2 {
   font-size: 24px;
   color: #BC7344;
   margin-bottom: 30px;
+  font-family: "Quicksand", serif;
+  margin-left: 10%;
 }
 
-p {
-  margin-top: 0;
+.input-group {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.input-group label {
   font-size: 15px;
   color: #BC7344;
-  margin-bottom: 5px;
-  margin-top: 2%;
+}
+
+.input-group .input-description {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  font-family: "Quicksand", serif;
 }
 
 .input-field {
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
   font-size: 16px;
-  border: 1px solid #533F31;
-  border-radius: 50px;
+  border: none;
+  border-bottom: 1px solid #533F31;
+  background-color: transparent;
+  font-family: "Quicksand", serif;
 }
 
-.upload-container {
-  margin-bottom: 15px;
-  position: relative;
-  display: inline-block;
+.upload-container input {
+  display: none;
 }
 
-.upload-label {
+.upload-container .upload-label {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px; /* Increased padding to make the box bigger */
-  width: 280px; /* You can adjust this value as needed */
-  height: 150px; /* Increased height for a larger box */
+  padding: 20px;
+  width: 280px;
+  height: 130px;
   border: 1px solid #533F31;
   border-radius: 50px;
   cursor: pointer;
   background-color: white;
-  font-size: 18px; /* Increased font size */
+  font-size: 18px;
   color: #BC7344;
-}
-
-.upload-label svg {
-  margin-right: 12px; /* Increased space between the icon and the text */
-  width: 24px; /* Increased the SVG icon size */
-  height: 24px; /* Increased the SVG icon size */
-}
-
-.upload-container input {
-  display: none; 
+  margin-bottom: 10%;
 }
 
 .login-button {
-  width: 50%;
-  padding: 10px;
-  background-color: #BC7344;
-  color: white;
+  width: 100%;
+  padding: 15px;
   font-size: 16px;
+  color: white;
+  background-color: #BC7344;
   border: none;
-  border-radius: 50px;
   cursor: pointer;
-  margin-top: 8%;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+  margin-top: 10%;
 }
 
 .login-button:hover {
-  background-color: #BC7344;
+  background-color: #8E3E1F;
 }
 
 .fixed-bottom-box {
@@ -223,11 +233,18 @@ p {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s ease;
-  transform: translateY(-15%); /* Elevates the add button */
+  transform: translateY(-15%); 
 }
 
 .add-button:hover {
   background-color: #643C2D;
 }
+.close-button {
+  position: absolute;
+  top: -10px;
+  right: -25px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 </style>
-

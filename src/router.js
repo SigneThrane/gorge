@@ -8,6 +8,7 @@ import ProfileMedia from './components/ProfileMedia.vue'
 import ProfileSetting from './components/ProfileSetting.vue'
 import TrendingPage from './components/TrendingPage.vue'
 import UploadPost from './components/UploadPost.vue'
+import MyProfile from './components/MyProfile.vue'
 
 
 export default createRouter({
@@ -57,6 +58,11 @@ export default createRouter({
       path: '/UploadPost',
       name: 'UploadPost',
       component: UploadPost
+    },
+    {
+      path: '/MyProfile',
+      name: 'MyProfile',
+      component: MyProfile
     },
 
   ]

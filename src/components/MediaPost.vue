@@ -3,20 +3,22 @@
     <router-link to="/TrendingPage">
       <button class="back-button" onclick="goBack()"><</button>
       </router-link>
-        <h1 class="header-title">FREJA PETERSEN</h1>
+      <router-link to="/ProfileMedia" class="no-underline">
+  <h1 class="header-title">FREJA PETERSEN</h1>
+</router-link>
   <div class="header-icons">
-    <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+    <router-link to="/Notification">
+      <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
   <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
 </svg></button>
+      </router-link>
     <button class="icon-button" onclick="sharePage()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
   <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
 </svg></button>
   </div>
 </div>
   <div class="image-container">
-    <router-link to="/ProfileMedia">
       <img class="post" src="/public/img/icons/placeholder2.png" alt="Centered Image" />
-    </router-link>
   </div>
 
   <div class="bottom-icons">
@@ -28,15 +30,12 @@
   </div>
 
   <div class="info">
+    <h3>Title</h3>
     <p>Description: Lorem Ipsum has been the industry's 
-      standard dummy text ever since the 1500s.  </p>
-    <p>Aesthetic: On-trend </p>
-    <p>Colors: Beige, blue, black, white </p>
-    <p>Materials: Cotton, knit, denim </p>
-    <p>Brands: H&M, Dr. Denim, Only </p>
-    <p>Time age: 2020 </p>
-    <p>Occasions: Everyday, school</p>
-    <p>Seasons: Spring, fall</p>
+      standard dummy text ever since the 1500s. Lorem Ipsum has been the industry's 
+      standard dummy text ever since the 1500s. </p>
+    <p>Tags: On-trend, Beige, blue, black, white </p>
+    <p>Link: https://www.youtube.com/watch?v=hvL1339luv0 </p>
   </div>
 
   <div class="fixed-bottom-box">
@@ -61,13 +60,13 @@
         </svg>
       </router-link>
 
-      <router-link to="/MessagesPage" class="nav-button">
+      <router-link to="/Notification" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 20">
   <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
 </svg>
       </router-link>
       
-      <router-link to="/ProfileMedia" class="nav-button">
+      <router-link to="/MyProfile" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 20">
   <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
 </svg>
@@ -119,6 +118,8 @@ body {
   margin: 0;
   margin-left: 40px; 
   color: black;
+  font-family: "Quicksand", serif;
+font-weight: 500;
 }
 
 .header-icons {
@@ -154,6 +155,7 @@ h1 {
   margin-bottom: 10px;
   text-align: center;
   font-weight: lighter;
+  font-family: "Quicksand", serif;
 }
 
 .info {
@@ -161,6 +163,7 @@ h1 {
   color: #643C2C;
   margin-top: 10%;
   padding: 9%;
+  font-family: "Quicksand", serif;
 }
 
 .info p {
@@ -245,10 +248,13 @@ h1 {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s ease;
-  transform: translateY(-15%); /* Elevates the add button */
+  transform: translateY(-15%); 
 }
 
 .add-button:hover {
   background-color: #643C2D;
+}
+.no-underline {
+  text-decoration: none;
 }
 </style>
