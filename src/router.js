@@ -9,6 +9,9 @@ import ProfileSetting from './components/ProfileSetting.vue'
 import TrendingPage from './components/TrendingPage.vue'
 import UploadPost from './components/UploadPost.vue'
 import MyProfile from './components/MyProfile.vue'
+import Notification from './components/Notification.vue'
+import Search from './components/Search.vue'
+
 
 
 export default createRouter({
@@ -63,6 +66,16 @@ export default createRouter({
       path: '/MyProfile',
       name: 'MyProfile',
       component: MyProfile
+    },
+    {
+      path: '/Notification',
+      name: 'Notification',
+      component: Notification
+    },
+    {
+      path: '/Search',
+      name: 'Search',
+      component: Search
     },
 
   ]
