@@ -9,12 +9,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'pwa-test',
-        short_name: 'pwa-test',
-        theme_color: '#4DBA87',
-        background_color: '#000000',
-        display: 'standalone',
-        start_url: '.',
+        name: "Gorge",              
+        short_name: "Gorge",        
+        description: "Your app's description",
+        start_url: "/",              
+        display: "standalone",       
+        theme_color: "#4DBA87",      
+        background_color: "#ffffff", 
         icons: [
           {
             src: './img/icons/android-chrome-192x192.png',
