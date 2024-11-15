@@ -11,7 +11,6 @@ export default defineConfig({
       manifest: {
         name: "Gorge",              
         short_name: "Gorge",        
-        description: "Your app's description",
         start_url: "/",              
         display: "standalone",       
         theme_color: "#4DBA87",      

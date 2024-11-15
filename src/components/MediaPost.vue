@@ -30,8 +30,8 @@
   </div>
 
   <div class="info">
-    <h3>Title</h3>
-    <p>Description: Lorem Ipsum has been the industry's 
+    <h3>Titel</h3>
+    <p>Beskrivelse: Lorem Ipsum has been the industry's 
       standard dummy text ever since the 1500s. Lorem Ipsum has been the industry's 
       standard dummy text ever since the 1500s. </p>
     <p>Tags: On-trend, Beige, blue, black, white </p>

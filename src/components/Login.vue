@@ -11,7 +11,7 @@
     
     <p class="register-link">Har du ikke en bruger?  <router-link to="/CreateAccount">Opret her.</router-link></p>
     <router-link to="/TrendingPage">
-      <button class="login-button">LOG-IN</button>
+      <button class="login-button">LOG IND</button>
       </router-link>
     <p class="register-link">Har du glemt din adgangskode? <a href="#">Klik her.</a></p>
   </div>
