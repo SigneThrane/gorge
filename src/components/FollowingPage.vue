@@ -76,18 +76,18 @@ const setTab = (tab) => {
 };
 
 const images = [
-  { id: 1, src: '/public/img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: '/public/img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: '/public/img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 4, src: '/public/img/icons/placeholder1.png', alt: 'Image 4' },
-  { id: 1, src: '/public/img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: '/public/img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: '/public/img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 4, src: '/public/img/icons/placeholder1.png', alt: 'Image 4' },
-  { id: 1, src: '/public/img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: '/public/img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: '/public/img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 4, src: '/public/img/icons/placeholder1.png', alt: 'Image 4' },
+  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
+  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
+  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
+  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
+  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
+  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
+  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
+  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
+  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
+  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
+  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
+  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
 ];
 </script>
 
