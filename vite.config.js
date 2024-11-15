@@ -1,7 +1,9 @@
 import { fileURLToPath, URL } from 'node:url';
+import { resolve, dirname } from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 
 export default defineConfig({
   plugins: [
@@ -38,7 +40,7 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'maskable'
           },
-            {
+          {
             src: './img/icons/android-chrome-maskable-512x512.png',
             sizes: '512x512',
             type: 'image/png',
@@ -46,6 +48,9 @@ export default defineConfig({
           }
         ]
       }
+    }),
+    VueI18nPlugin({
+      include: resolve(dirname(fileURLToPath(import.meta.url)), './src/i18n/locales/**') // path to translation data
     })
   ],
   resolve: {
