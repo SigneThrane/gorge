@@ -19,11 +19,15 @@
   </template>
   
   <script setup>
-  
+  import { useRouter } from 'vue-router'; // Importerer useRouter fra vue-router for at kunne navigere mellem sider
+import { useI18n } from 'vue-i18n'; // Importerer useI18n fra vue-i18n til internationalisering (sprogskift)
+
+const i18n = useI18n({}); // Initialiserer i18n uden nogen specifikke indstillinger
+const { t: $t } = i18n; // Destrukturerer t-funktionen fra i18n og omdøber den til $t for at bruge den til oversættelser
+
+const router = useRouter(); // Initialiserer routeren for at kunne navigere til forskellige sider
   </script>
-  
-  
-  
+   
   <style scoped>
  body {
       display: flex;

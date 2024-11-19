@@ -3,7 +3,7 @@
     <router-link to="/MediaPost">
      <button class="back-button" onclick="goBack()"><</button>
       </router-link>
-  <h1 class="header-title">FREJA PETERSEN</h1>
+      <h1 class="header-title">{{ headerTitle }}</h1> 
   <div class="header-icons">
     <router-link to="/Notification">
       <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" class="bi bi-bell" viewBox="0 0 16 16">
@@ -21,8 +21,8 @@
  
    <img src="/public/img/icons/crown.png" alt="Crown Icon" class="crown-icon-verify" />
  </div>
- <h1>FREJA PETERSEN</h1>
- <p>21 years, Århus, preppy street style</p>
+ <h1>{{ headerTitle }}</h1>
+ <p>{{ profileInfo }}</p>
  <div class="p-container">
        <p class="numbers1">1K</p>
        <p class="numbers2">10.9 K</p>
@@ -52,7 +52,7 @@
 </svg>
       </router-link>
 
-      <router-link to="/SearchPage" class="nav-button">
+      <router-link to="/Search" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-search" viewBox="0 0 16 20">
   <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
 </svg>
@@ -80,25 +80,58 @@
    </template>
    
    <script setup>
-     import { ref } from 'vue';
-   
-   const menuVisible = ref(false);
-   
-   const toggleMenu = () => {
-     menuVisible.value = !menuVisible.value;
-   };
-
-   const images = [
-   { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-];
-   </script>
+    import { ref, onMounted } from 'vue';
+    import { db } from '../firebaseconfig.js'; // Adjust this path based on your project structure
+    import { collection, getDocs } from 'firebase/firestore';
+    
+    // State for profile info and other data
+    const headerTitle = ref("Loading..."); // Default text while loading
+    const profileInfo = ref("Loading..."); // Default profile info
+    
+    // Images array
+    const images = [
+      { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
+      { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
+      { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
+      { id: 4, src: './img/icons/placeholder1.png', alt: 'Image 4' },
+      { id: 5, src: './img/icons/placeholder1.png', alt: 'Image 5' },
+      { id: 6, src: './img/icons/placeholder2.png', alt: 'Image 6' },
+      { id: 7, src: './img/icons/placeholder1.png', alt: 'Image 7' },
+      { id: 8, src: './img/icons/placeholder2.png', alt: 'Image 8' }
+    ];
+    
+    // Fetch the username
+    const fetchUsername = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "username"));
+        querySnapshot.forEach((doc) => {
+          headerTitle.value = doc.data().username1;
+        });
+      } catch (error) {
+        console.error("Error fetching username:", error);
+        headerTitle.value = "Error loading username";
+      }
+    };
+    
+    // Fetch the profile info
+    const fetchProfileInfo = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "profileInfo"));
+        querySnapshot.forEach((doc) => {
+          profileInfo.value = doc.data().info2; // Assuming `info` field exists
+        });
+      } catch (error) {
+        console.error("Error fetching profile info:", error);
+        profileInfo.value = "Error loading profile info";
+      }
+    };
+    
+    // Lifecycle hook to fetch data on component mount
+    onMounted(() => {
+      fetchUsername();       // Fetch username
+      fetchProfileInfo();    // Fetch profile info
+    });
+    </script>
  
    
  <style scoped>
@@ -150,6 +183,7 @@ body {
        text-align: center;
        font-weight: 500;
        font-family: "Quicksand", serif;
+       text-transform: uppercase;
      }
  
      p{

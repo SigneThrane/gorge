@@ -4,7 +4,7 @@
       <button class="back-button" onclick="goBack()"><</button>
       </router-link>
       <router-link to="/ProfileMedia" class="no-underline">
-  <h1 class="header-title">FREJA PETERSEN</h1>
+  <h1 class="header-title">{{ headerTitle }}</h1>
 </router-link>
   <div class="header-icons">
     <router-link to="/Notification">
@@ -30,12 +30,10 @@
   </div>
 
   <div class="info">
-    <h3>Titel</h3>
-    <p>Beskrivelse: Lorem Ipsum has been the industry's 
-      standard dummy text ever since the 1500s. Lorem Ipsum has been the industry's 
-      standard dummy text ever since the 1500s. </p>
-    <p>Tags: On-trend, Beige, blue, black, white </p>
-    <p>Link: https://www.youtube.com/watch?v=hvL1339luv0 </p>
+    <h3>{{ title }}</h3>
+    <p>Beskrivelse: {{ description }}</p>
+    <p>Tags: {{ tag }} </p>
+    <p>Link: {{ link }} </p>
   </div>
 
   <div class="fixed-bottom-box">
@@ -48,7 +46,7 @@
 </svg>
       </router-link>
 
-      <router-link to="/SearchPage" class="nav-button">
+      <router-link to="/Search" class="nav-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-search" viewBox="0 0 16 20">
   <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
 </svg>
@@ -76,14 +74,91 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
-
+  import { ref, onMounted } from 'vue'; 
+  import { db } from '../firebaseconfig.js';
+  import { collection, getDocs } from 'firebase/firestore';
+  
+  const headerTitle = ref("Loading...");
+  const title = ref("Loading..."); 
+  const description = ref("Loading..."); 
+  const tag = ref("Loading..."); 
+  const link = ref("Loading..."); 
+  
   const menuVisible = ref(false);
 
   const toggleMenu = () => {
     menuVisible.value = !menuVisible.value;
   };
+
+  const fetchUsername = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "username"));
+        querySnapshot.forEach((doc) => {
+          headerTitle.value = doc.data().username1;
+        });
+      } catch (error) {
+        console.error("Error fetching username:", error);
+        headerTitle.value = "Error loading username";
+      }
+    };
+
+  const fetchTitle = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "mediaTitle"));
+      querySnapshot.forEach((doc) => {
+        title.value = doc.data().title;
+      });
+    } catch (error) {
+      console.error("Error fetching title:", error);
+      mediaTitle.value = "Error loading title";
+    }
+  };
+
+  const fetchDescription = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "description"));
+      querySnapshot.forEach((doc) => {
+        description.value = doc.data().description;
+      });
+    } catch (error) {
+      console.error("Error fetching description:", error);
+      description.value = "Error loading title";
+    }
+  };
+
+  const fetchTag = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "tag"));
+      querySnapshot.forEach((doc) => {
+        tag.value = doc.data().Tags;
+      });
+    } catch (error) {
+      console.error("Error fetching tag:", error);
+      tag.value = "Error loading tag";
+    }
+  };
+
+  const fetchLink = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "link"));
+      querySnapshot.forEach((doc) => {
+        link.value = doc.data().link;
+      });
+    } catch (error) {
+      console.error("Error fetching link:", error);
+      link.value = "Error loading link";
+    }
+  };
+  
+  onMounted(() => {
+    fetchUsername();  
+    fetchTitle();      
+    fetchDescription();
+    fetchTag();
+    fetchLink();
+  });
 </script>
+
 
 <style scoped>
 body {
@@ -156,6 +231,7 @@ h1 {
   text-align: center;
   font-weight: lighter;
   font-family: "Quicksand", serif;
+  text-transform: uppercase;
 }
 
 .info {
