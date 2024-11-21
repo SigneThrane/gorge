@@ -1,21 +1,19 @@
 <template>
   <div class="tabs">
-    <router-link 
-      to="/TrendingPage" 
-      class="tab-link" 
-      :class="{ active: activeTab === 'TRENDING' }" 
-      @click="setTab('TRENDING')"
+    <router-link
+      to="/TrendingPage"
+      class="tab-link"
+      active-class="active"
     >
       TRENDING
     </router-link>
 
-    <div class="vertical-line"></div> 
+    <div class="vertical-line"></div>
 
-    <router-link 
-      to="/FollowingPage" 
-      class="tab-link" 
-      :class="{ active: activeTab === 'FOLLOWING' }" 
-      @click="setTab('FOLLOWING')"
+    <router-link
+      to="/FollowingPage"
+      class="tab-link"
+      active-class="active"
     >
       FOLLOWING
     </router-link>
@@ -67,19 +65,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-const activeTab = ref('trending');
-
-const setTab = (tab) => {
-  activeTab.value = tab;
-};
-
 const images = [
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
   { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
   { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
   { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
@@ -90,6 +76,28 @@ const images = [
   { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
 ];
 </script>
+
+<style scoped>
+/* Keeping your existing styles */
+.tab-link {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 5px 10px;
+  color: #643C2C;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.tab-link:hover {
+  color: #38231b;
+}
+
+.tab-link.active {
+  font-weight: bold;
+  color: #643C2C;
+}
+</style>
+
 
 <style scoped>
 body {
