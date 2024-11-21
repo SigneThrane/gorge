@@ -7,7 +7,7 @@
       </svg>
     </button>
       </router-link>
-    <h2>Opret Post</h2>
+    <h2>{{ uploadTitle }}</h2>
 
     <div class="upload-container">
       <label for="image-upload" class="upload-label">
@@ -20,25 +20,25 @@
       <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" />
     </div>
     <div class="input-group">
-      <label>Titel</label>
+      <label>{{ title }}</label>
       <input type="text" class="input-field">
       <p class="input-description">Titel til post her</p>
     </div>
 
     <div class="input-group">
-      <label>Beskrivelse</label>
+      <label>{{ description }}</label>
       <input type="text" class="input-field">
       <p class="input-description">Beskrivelse til post her</p>
     </div>
 
     <div class="input-group">
-      <label>Tags</label>
+      <label>{{ tag }}</label>
       <input type="text" class="input-field">
       <p class="input-description">Tilføj tags her</p>
     </div>
 
     <div class="input-group">
-      <label>Link</label>
+      <label>{{ link }}</label>
       <input type="text" class="input-field">
       <p class="input-description">Tilføj dit link her</p>
     </div>
@@ -86,7 +86,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+  import { ref, onMounted } from 'vue'; 
+  import { db } from '../firebaseconfig.js';
+  import { collection, getDocs } from 'firebase/firestore';
+
+const uploadTitle = ref("Loading...");
+const description = ref("Loading...");
+const link = ref("Loading...");
+const tag = ref("Loading...");
+const title = ref("Loading...");
 
 const selectedImage = ref(null);
 
@@ -97,6 +105,74 @@ const handleImageUpload = (event) => {
     console.log('Image uploaded:', file);
   }
 };
+
+const fetchUploadTitle = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "uploadPost"));
+        querySnapshot.forEach((doc) => {
+          uploadTitle.value = doc.data().uploadTitle;
+        });
+      } catch (error) {
+        console.error("Error fetching uploadTitle:", error);
+        uploadTitle.value = "Error loading uploadTitle";
+      }
+    };
+
+    const fetchDescription = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "uploadPost"));
+        querySnapshot.forEach((doc) => {
+          description.value = doc.data().description;
+        });
+      } catch (error) {
+        console.error("Error fetching description:", error);
+        description.value = "Error loading description";
+      }
+    };
+
+    const fetchLink = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "uploadPost"));
+        querySnapshot.forEach((doc) => {
+          link.value = doc.data().link;
+        });
+      } catch (error) {
+        console.error("Error fetching link:", error);
+        link.value = "Error loading link";
+      }
+    };
+
+    const fetchTag = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "uploadPost"));
+        querySnapshot.forEach((doc) => {
+          tag.value = doc.data().tag;
+        });
+      } catch (error) {
+        console.error("Error fetching tag:", error);
+        tag.value = "Error loading tag";
+      }
+    };
+
+    const fetchTitle = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "uploadPost"));
+        querySnapshot.forEach((doc) => {
+          title.value = doc.data().title;
+        });
+      } catch (error) {
+        console.error("Error fetching title:", error);
+        title.value = "Error loading title";
+      }
+    };
+
+    onMounted(() => {
+    fetchUploadTitle();  
+    fetchDescription();  
+    fetchLink(); 
+    fetchTag(); 
+    fetchTitle(); 
+  });
 </script>
 
 <style scoped>

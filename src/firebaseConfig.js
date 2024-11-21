@@ -1,15 +1,15 @@
-// firebase/init.js
+// firebaseConfig.js
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage'; // Import getStorage for Firebase Storage
+import { getAuth } from 'firebase/auth';  // Import Authentication
+import { getFirestore } from 'firebase/firestore'; // Import Firestore
+import { getStorage } from 'firebase/storage'; // Import Storage
 
+// Firebase configuration object (replace with your own config details)
 const firebaseConfig = {
   apiKey: "AIzaSyBht85PRDzgqPteX3H5V4ncirIHbXpC2fw",
   authDomain: "gorge-f34e3.firebaseapp.com",
   projectId: "gorge-f34e3",
-  storageBucket: "gorge-f34e3.appspot.com", // Corrected the storageBucket URL here
+  storageBucket: "gorge-f34e3.appspot.com",
   messagingSenderId: "477780899267",
   appId: "1:477780899267:web:79cf0c572e64dae97a7976",
   measurementId: "G-LNXKZKVVFM"
@@ -17,15 +17,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-// Initialize Firestore
-const db = getFirestore(app);
+// Initialize services
+const auth = getAuth(app);       // Authentication instance
+const db = getFirestore(app);    // Firestore instance
+const storage = getStorage(app); // Storage instance
 
-// Initialize Authentication
-const auth = getAuth(app);
-
-// Initialize Storage
-const storage = getStorage(app);
-
-export { db, auth, storage }; // Export Firestore, Authentication, and Storage instances for use in your Vue components
+export { auth, db, storage };  // Export the instances for use in your components

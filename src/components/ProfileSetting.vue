@@ -8,51 +8,51 @@
   </router-link>
 
   <div class="profile-picture">
-    <h1>Din profil</h1>
+    <h1>{{ profile }}</h1>
     <div class="image-container">
       <img class="post" src="/public/img/icons/placeholder4.png" alt="Centered Image" />
-      <p>Ændre profilbillede</p>
+      <p>{{ changeProfile }}</p>
     </div>
 
     <!-- "Omkring dig" Title and Line -->
     <div class="section-title">
-      <h2>Omkring dig</h2>
+      <h2>{{ about }}</h2>
       <div class="line"></div>
     </div>
 
     <!-- User Info: Brugernavn -->
     <div class="user-info">
-      <p>Brugernavn</p>
+      <p>{{ username }}</p>
       <p class="username">Cathia Nielsen</p>
     </div>
     <div class="user-info">
-      <p>Beskrivelse</p>
+      <p>{{ description }}</p>
       <p class="username">Lorem Ipsum...</p>
     </div>
   </div>
 
   <div class="section-title2">
-      <h2>Tilpas profil</h2>
+      <h2>{{ adjust }}</h2>
       <div class="line"></div>
     </div>
   <div class="grid-container">
-    <div class="grid-title">Baggrundsbillede</div>
+    <div class="grid-title">{{ background }}</div>
     <div class="grid-image">
       <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
     </div>
-    <div class="grid-title">Bagrundsfarve</div>
+    <div class="grid-title">{{ color }}</div>
     <div class="grid-image">
       <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
     </div>
-    <div class="grid-title">Brugernavn</div>
+    <div class="grid-title">{{ username }}</div>
     <div class="grid-image">
       <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
     </div>
-    <div class="grid-title">Beskrivelse/profilaktivitet</div>
+    <div class="grid-title">{{ profileActivity }}</div>
     <div class="grid-image">
       <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
     </div>
-    <div class="grid-title">Aktivitetstal</div>
+    <div class="grid-title">{{ activity }}</div>
     <div class="grid-image">
       <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
     </div>
@@ -95,13 +95,161 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue'; 
+  import { db } from '../firebaseconfig.js';
+  import { collection, getDocs } from 'firebase/firestore';
+  
+  const profile = ref("Loading...");
+  const changeProfile = ref("Loading...");
+  const about = ref("Loading...");
+  const username = ref("Loading...");
+  const description = ref("Loading...");
+  const adjust = ref("Loading...");
+  const background = ref("Loading...");
+  const color = ref("Loading...");
+  const profileActivity = ref("Loading...");
+  const activity = ref("Loading...");
 
   const menuVisible = ref(false);
 
   const toggleMenu = () => {
     menuVisible.value = !menuVisible.value;
   };
+
+  const fetchProfile = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          profile.value = doc.data().profile;
+        });
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        profile.value = "Error loading profile";
+      }
+    };
+
+    
+  const fetchchangeProfile = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          changeProfile.value = doc.data().changePicture;
+        });
+      } catch (error) {
+        console.error("Error fetching changeProfile:", error);
+        changeProfile.value = "Error loading changeProfile";
+      }
+    };
+
+    const fetchAbout = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          about.value = doc.data().about;
+        });
+      } catch (error) {
+        console.error("Error fetching about:", error);
+        about.value = "Error loading about";
+      }
+    };
+
+    
+    const fetchUsername = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          username.value = doc.data().username;
+        });
+      } catch (error) {
+        console.error("Error fetching username:", error);
+        username.value = "Error loading username";
+      }
+    };
+
+    const fetchDescription = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          description.value = doc.data().description;
+        });
+      } catch (error) {
+        console.error("Error fetching description:", error);
+        description.value = "Error loading description";
+      }
+    };
+
+    const fetchAdjust = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          adjust.value = doc.data().adjust;
+        });
+      } catch (error) {
+        console.error("Error fetching adjust:", error);
+        adjust.value = "Error loading adjust";
+      }
+    };
+
+    const fetchBackground = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          background.value = doc.data().background;
+        });
+      } catch (error) {
+        console.error("Error fetching background:", error);
+        background.value = "Error loading background";
+      }
+    };
+
+    const fetchColor = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          color.value = doc.data().color;
+        });
+      } catch (error) {
+        console.error("Error fetching color:", error);
+        color.value = "Error loading color";
+      }
+    };
+
+    const fetchProfileActivity = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          profileActivity.value = doc.data().profileActivity;
+        });
+      } catch (error) {
+        console.error("Error fetching profileActivity:", error);
+        profileActivity.value = "Error loading profileActivity";
+      }
+    };
+
+    const fetchActivity = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "setting"));
+        querySnapshot.forEach((doc) => {
+          activity.value = doc.data().activity;
+        });
+      } catch (error) {
+        console.error("Error fetching activity:", error);
+        activity.value = "Error loading activity";
+      }
+    };
+  
+  onMounted(() => {
+    fetchProfile();  
+    fetchchangeProfile(); 
+    fetchAbout(); 
+    fetchUsername(); 
+    fetchDescription();
+    fetchAdjust();
+    fetchBackground();
+    fetchColor();
+    fetchProfileActivity();
+    fetchActivity();
+  });
 </script>
 
 <style scoped>
