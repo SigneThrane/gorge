@@ -1,51 +1,54 @@
 <template>
   <div class="login-container">
+    <!-- Close Modal Button -->
     <router-link to="/TrendingPage">
       <button class="close-button" @click="closeModal">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-      </svg>
-    </button>
-      </router-link>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+        </svg>
+      </button>
+    </router-link>
+
+    <!-- Page Title -->
     <h2>{{ uploadTitle }}</h2>
 
+    <!-- Image Upload (Disabled for now) -->
     <div class="upload-container">
       <label for="image-upload" class="upload-label">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
-          <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-          <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
+          <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+          <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z" />
         </svg>
         <span>Vælg fil</span>
       </label>
-      <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" />
+      <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" disabled />
     </div>
+
+    <!-- Form Fields -->
     <div class="input-group">
-      <label>{{ title }}</label>
-      <input type="text" class="input-field">
-      <p class="input-description">Titel til post her</p>
+      <label>Title</label>
+      <input v-model="title" type="text" class="input-field" placeholder="Enter title" />
     </div>
 
     <div class="input-group">
-      <label>{{ description }}</label>
-      <input type="text" class="input-field">
-      <p class="input-description">Beskrivelse til post her</p>
+      <label>Description</label>
+      <input v-model="description" type="text" class="input-field" placeholder="Enter description" />
     </div>
 
     <div class="input-group">
-      <label>{{ tag }}</label>
-      <input type="text" class="input-field">
-      <p class="input-description">Tilføj tags her</p>
+      <label>Tag</label>
+      <input v-model="tag" type="text" class="input-field" placeholder="Enter tags" />
     </div>
 
     <div class="input-group">
-      <label>{{ link }}</label>
-      <input type="text" class="input-field">
-      <p class="input-description">Tilføj dit link her</p>
+      <label>Link</label>
+      <input v-model="link" type="text" class="input-field" placeholder="Enter link (optional)" />
     </div>
 
-    <router-link to="/TrendingPage">
-      <button class="login-button">Upload</button>
-    </router-link>
+    <!-- Upload Button -->
+    <button class="login-button" :disabled="isUploading" @click="uploadPost">
+      {{ isUploading ? "Uploading..." : "Upload" }}
+    </button>
   </div>
 
   <div class="fixed-bottom-box">
@@ -86,95 +89,73 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'; 
-  import { db } from '../firebaseconfig.js';
-  import { collection, getDocs } from 'firebase/firestore';
+import { ref } from "vue";
+import { db } from "../firebaseconfig.js";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
-const uploadTitle = ref("Loading...");
-const description = ref("Loading...");
-const link = ref("Loading...");
-const tag = ref("Loading...");
-const title = ref("Loading...");
-
+// Variables for the form and image
+const uploadTitle = ref("Upload Post");
+const title = ref("");
+const description = ref("");
+const tag = ref("");
+const link = ref("");
 const selectedImage = ref(null);
+const isUploading = ref(false);
 
+// Handle image upload (currently does nothing)
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    selectedImage.value = URL.createObjectURL(file);
-    console.log('Image uploaded:', file);
+    selectedImage.value = file;
+    console.log("Image selected:", selectedImage.value);
   }
 };
 
-const fetchUploadTitle = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "uploadPost"));
-        querySnapshot.forEach((doc) => {
-          uploadTitle.value = doc.data().uploadTitle;
-        });
-      } catch (error) {
-        console.error("Error fetching uploadTitle:", error);
-        uploadTitle.value = "Error loading uploadTitle";
-      }
+// Upload the post (image part disabled)
+const uploadPost = async () => {
+  if (!title.value || !description.value) {
+    alert("Please fill in all required fields!");
+    return;
+  }
+
+  isUploading.value = true;
+
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to upload a post.");
+      return;
+    }
+
+    // Create post data
+    const post = {
+      title: title.value,
+      description: description.value,
+      tag: tag.value || null,
+      link: link.value || null,
+      userId: user.uid,
+      createdAt: serverTimestamp(),
     };
 
-    const fetchDescription = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "uploadPost"));
-        querySnapshot.forEach((doc) => {
-          description.value = doc.data().description;
-        });
-      } catch (error) {
-        console.error("Error fetching description:", error);
-        description.value = "Error loading description";
-      }
-    };
+    // Add post to Firestore
+    await addDoc(collection(db, "posts"), post);
+    alert("Post uploaded successfully!");
 
-    const fetchLink = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "uploadPost"));
-        querySnapshot.forEach((doc) => {
-          link.value = doc.data().link;
-        });
-      } catch (error) {
-        console.error("Error fetching link:", error);
-        link.value = "Error loading link";
-      }
-    };
-
-    const fetchTag = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "uploadPost"));
-        querySnapshot.forEach((doc) => {
-          tag.value = doc.data().tag;
-        });
-      } catch (error) {
-        console.error("Error fetching tag:", error);
-        tag.value = "Error loading tag";
-      }
-    };
-
-    const fetchTitle = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "uploadPost"));
-        querySnapshot.forEach((doc) => {
-          title.value = doc.data().title;
-        });
-      } catch (error) {
-        console.error("Error fetching title:", error);
-        title.value = "Error loading title";
-      }
-    };
-
-    onMounted(() => {
-    fetchUploadTitle();  
-    fetchDescription();  
-    fetchLink(); 
-    fetchTag(); 
-    fetchTitle(); 
-  });
+    // Clear fields after upload
+    title.value = "";
+    description.value = "";
+    tag.value = "";
+    link.value = "";
+  } catch (error) {
+    console.error("Error uploading post:", error);
+    alert("Failed to upload post.");
+  } finally {
+    isUploading.value = false;
+  }
+};
 </script>
-
 <style scoped>
 body {
   margin: 0;
