@@ -4,11 +4,11 @@
       <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
       <h2>LOG IND</h2>
 
-      <p>Brugernavn</p>
-      <input type="text" v-model="email" class="input-field" placeholder="Email" />
+      <p>E-mail</p>
+      <input type="text" v-model="email" class="input-field" placeholder="" />
 
       <p>Adgangskode</p>
-      <input type="password" v-model="password" class="input-field" placeholder="Password" />
+      <input type="password" v-model="password" class="input-field" placeholder="" />
 
       <p class="register-link">
         Har du ikke en bruger? 

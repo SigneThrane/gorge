@@ -1,4 +1,47 @@
 <template>
+  <div class="search-container">
+    <div class="search-box">
+      <input
+        type="text"
+        v-model="searchQuery"
+        @input="searchData"
+        placeholder="Search for users or tags..."
+        class="search-input"
+      />
+      <!-- Search Button -->
+      <button @click="addToSearchHistory" class="search-button">
+        Search
+      </button>
+      <!-- Cancel Button (always visible) -->
+      <button @click="goBack" class="cancel-button">
+        Cancel
+      </button>
+    </div>
+
+    <div v-if="searchResults.length > 0">
+      <h3>Results</h3>
+      <div v-for="result in searchResults" :key="result.id" class="search-result-item">
+        <p>{{ result.name || result.tag }}</p> <!-- Adjust this depending on whether it's a user or tag -->
+      </div>
+    </div>
+
+    <!-- If no results are found -->
+    <div v-else-if="searchQuery && searchResults.length === 0" class="no-results">
+      <p>No results found.</p>
+    </div>
+
+    <!-- Search History Section -->
+    <div class="search-history">
+      <h3>Search History</h3>
+      <ul>
+        <li v-for="(item, index) in searchHistory" :key="index">
+          {{ item }}
+          <button @click="deleteFromHistory(index)" class="delete-button">X</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
     <div class="fixed-bottom-box">
        <div class="fixed-nav">
    
@@ -37,63 +80,216 @@
    </template>
    
    <script setup>
- 
+   import { ref, onMounted } from 'vue';
+   import { useRouter } from 'vue-router';
+   import { db } from '../firebaseconfig.js';
+   import { collection, query, where, getDocs } from 'firebase/firestore';
+   
+   const searchQuery = ref('');
+   const searchHistory = ref([]);
+   const searchResults = ref([]);
+   const router = useRouter();
+   
+   // Load search history from localStorage on component mount
+   onMounted(() => {
+     const savedHistory = localStorage.getItem('searchHistory');
+     if (savedHistory) {
+       searchHistory.value = JSON.parse(savedHistory);
+     }
+   });
+   
+   // Search for users and tags
+   const searchData = async () => {
+     if (!searchQuery.value) {
+       searchResults.value.length = 0; // Clear previous results
+       return;
+     }
+   
+     try {
+       searchResults.value.length = 0; // Clear previous results before new search
+   
+       // Query for users based on the search query
+       const userQuery = query(
+         collection(db, 'username'),
+         where('username', '>=', searchQuery.value),
+         where('username', '<=', searchQuery.value + '\uf8ff')
+       );
+       const userQuerySnapshot = await getDocs(userQuery);
+       userQuerySnapshot.forEach(doc => {
+         searchResults.value.push({ id: doc.id, name: doc.data().username, type: 'user' }); // Mark this as a user
+       });
+   
+       // Query for tags based on the search query
+       const tagQuery = query(
+         collection(db, 'tag'),
+         where('tag', '>=', searchQuery.value),
+         where('tag', '<=', searchQuery.value + '\uf8ff')
+       );
+       const tagQuerySnapshot = await getDocs(tagQuery);
+       tagQuerySnapshot.forEach(doc => {
+         searchResults.value.push({ id: doc.id, tag: doc.data().tag, type: 'tag' }); // Mark this as a tag
+       });
+     } catch (error) {
+       console.error('Error fetching search results: ', error);
+     }
+   };
+   
+   // Add search query to history and save it
+   const addToSearchHistory = () => {
+     if (searchQuery.value && !searchHistory.value.includes(searchQuery.value)) {
+       searchHistory.value.push(searchQuery.value);
+       localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
+     }
+     searchQuery.value = ''; // Clear the search input after adding to history
+   };
+   
+   // Delete a search history item by index
+   const deleteFromHistory = (index) => {
+     searchHistory.value.splice(index, 1);
+     localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
+   };
+   
+   // Go back to the previous page
+   const goBack = () => {
+     router.back();
+   };
    </script>
    
-   <style scoped>
-   body {
-     margin: 0;
-     background-color: #FCF7F2;
-     font-family: "Quicksand", serif;
-     padding-top: 60px;
-   }
-   .fixed-bottom-box {
-     position: fixed;
-     height: 70px;
-     width: 100%;
-     bottom: 0;
-     left: 0;
-     background-color: #FCF7F2;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-   }
-   
-   .fixed-nav {
-     display: flex;
-     justify-content: space-around;
-     align-items: center;
-     width: 100%;
-     max-width: 500px;
-   }
-   
-   .nav-button {
-     width: 34px;
-     height: 34px;
-     color: #B66B4D;
-     text-decoration: none;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-   }
-   
-   .add-button {
-     width: 50px;
-     height: 50px;
-     border-radius: 50%;
-     background-color: #B66B4D;
-     color: #FCF7F2;
-     border: none;
-     cursor: pointer;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     transition: background-color 0.3s ease;
-     transform: translateY(-15%); 
-   }
-   
-   .add-button:hover {
-     background-color: #643C2D;
-   }
-   </style>
-   
+ <style scoped>
+body {
+  margin: 0;
+  background-color: #FCF7F2;
+  font-family: "Quicksand", serif;
+  padding-top: 60px;
+}
+
+.fixed-bottom-box {
+  position: fixed;
+  height: 70px;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: #FCF7F2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fixed-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.nav-button {
+  width: 34px;
+  height: 34px;
+  color: #B66B4D;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #B66B4D;
+  color: #FCF7F2;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  transform: translateY(-15%);
+}
+
+.add-button:hover {
+  background-color: #643C2D;
+}
+
+.search-container {
+  padding: 20px;
+  padding-top: 8%;
+}
+
+.search-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px 0px 0px 5px;
+}
+
+.search-button {
+  background-color: #B66B4D;
+  color: white;
+  border: none;
+  padding: 11px 15px;
+  border-radius: 0px 5px 5px 0px;
+  cursor: pointer;
+}
+
+/* Cancel Button Styling */
+.cancel-button {
+  background-color: #c4c4c4;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13.8px;
+  margin-left: 10px;
+}
+
+.cancel-button:hover {
+  background-color: #969696;
+}
+
+.search-history {
+  margin-top: 20px;
+}
+
+.search-history h3 {
+  font-size: 16px;
+  color: #B66B4D;
+}
+
+.search-history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.search-history li {
+  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-button {
+  background-color: #c4c4c4;
+  opacity: 70%;
+  color: white;
+  border: none;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 9px;
+  width: 18px;
+  height: 18px;
+}
+
+.delete-button:hover {
+  background-color: #969696;
+}
+</style>
