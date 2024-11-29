@@ -82,7 +82,7 @@
    <script setup>
    import { ref, onMounted } from 'vue';
    import { useRouter } from 'vue-router';
-   import { db } from '../firebaseconfig.js';
+   import { db } from '../firebaseConfig.js';
    import { collection, query, where, getDocs } from 'firebase/firestore';
    
    const searchQuery = ref('');

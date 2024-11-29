@@ -9,10 +9,8 @@
       </button>
     </router-link>
 
-    <!-- Page Title -->
     <h2>{{ uploadTitle }}</h2>
 
-    <!-- Image Upload (Disabled for now) -->
     <div class="upload-container">
       <label for="image-upload" class="upload-label">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
@@ -21,10 +19,9 @@
         </svg>
         <span>Vælg fil</span>
       </label>
-      <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" disabled />
+      <input type="file" id="image-upload" class="input-field" accept="image/*" @change="handleImageUpload" />
     </div>
 
-    <!-- Form Fields -->
     <div class="input-group">
       <label>Title</label>
       <input v-model="title" type="text" class="input-field" placeholder="Enter title" />
@@ -45,7 +42,6 @@
       <input v-model="link" type="text" class="input-field" placeholder="Enter link (optional)" />
     </div>
 
-    <!-- Upload Button -->
     <button class="login-button" :disabled="isUploading" @click="uploadPost">
       {{ isUploading ? "Uploading..." : "Upload" }}
     </button>
@@ -90,11 +86,12 @@
 
 <script setup>
 import { ref } from "vue";
-import { db } from "../firebaseconfig.js";
+import { db } from "../firebaseConfig.js";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import axios from "axios";
 
-// Variables for the form and image
+// Form fields
 const uploadTitle = ref("Upload Post");
 const title = ref("");
 const description = ref("");
@@ -103,7 +100,7 @@ const link = ref("");
 const selectedImage = ref(null);
 const isUploading = ref(false);
 
-// Handle image upload (currently does nothing)
+// Handle image selection
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -112,7 +109,27 @@ const handleImageUpload = (event) => {
   }
 };
 
-// Upload the post (image part disabled)
+// Upload image to Cloudinary
+const uploadImageToCloudinary = async (image) => {
+  const formData = new FormData();
+  formData.append("file", image);
+  formData.append("upload_preset", "ml_default"); // Replace with your actual preset
+  formData.append("cloud_name", "dfyymggsw"); // Replace with your Cloudinary cloud name
+
+  // Log the FormData object for debugging
+  console.log("FormData to be sent:", formData);
+
+  try {
+    const response = await axios.post(`https://api.cloudinary.com/v1_1/dfyymggsw/image/upload`, formData);
+    console.log("Cloudinary Response:", response.data); // Debugging Cloudinary response
+    return response.data.secure_url; // URL of the uploaded image
+  } catch (error) {
+    console.error("Error uploading image:", error.response || error);
+    throw new Error("Failed to upload image to Cloudinary");
+  }
+};
+
+// Upload post with image to Firebase
 const uploadPost = async () => {
   if (!title.value || !description.value) {
     alert("Please fill in all required fields!");
@@ -129,12 +146,20 @@ const uploadPost = async () => {
       return;
     }
 
-    // Create post data
+    // Upload image to Cloudinary if selected
+    let imageUrl = null;
+    if (selectedImage.value) {
+      imageUrl = await uploadImageToCloudinary(selectedImage.value);
+      console.log("Image uploaded to Cloudinary:", imageUrl);
+    }
+
+    // Create post data to save to Firestore
     const post = {
       title: title.value,
       description: description.value,
       tag: tag.value || null,
       link: link.value || null,
+      imageUrl: imageUrl,  // Save the image URL from Cloudinary
       userId: user.uid,
       createdAt: serverTimestamp(),
     };
@@ -148,6 +173,7 @@ const uploadPost = async () => {
     description.value = "";
     tag.value = "";
     link.value = "";
+    selectedImage.value = null; // Clear the selected image
   } catch (error) {
     console.error("Error uploading post:", error);
     alert("Failed to upload post.");
@@ -156,6 +182,7 @@ const uploadPost = async () => {
   }
 };
 </script>
+
 <style scoped>
 body {
   margin: 0;

@@ -81,7 +81,7 @@
    
    <script setup>
     import { ref, onMounted } from 'vue';
-    import { db } from '../firebaseconfig.js'; // Adjust this path based on your project structure
+    import { db } from '../firebaseConfig.js'; // Adjust this path based on your project structure
     import { collection, getDocs } from 'firebase/firestore';
     
     // State for profile info and other data

@@ -18,7 +18,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { db, auth } from "../firebaseconfig.js"; // Import Firebase Firestore and Auth
+import { db, auth } from "../firebaseConfig.js"; // Import Firebase Firestore and Auth
 import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "vue-router"; // To navigate to the next page after saving data
 

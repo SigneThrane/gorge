@@ -20,9 +20,10 @@
   </div>
 
   <div class="image-grid">
-    <div class="image" v-for="n in images" :key="n.id">
-      <router-link to="/MediaPost">
-        <img :src="n.src" :alt="n.alt" />
+    <div class="image" v-for="post in posts" :key="post.id">
+      <!-- Maintain the same structure -->
+      <router-link :to="`/MediaPost/${post.id}`">
+        <img :src="post.imageUrl" :alt="post.title" />
       </router-link>
     </div>
   </div>
@@ -65,20 +66,30 @@
 </template>
 
 <script setup>
-const images = [
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 3, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-];
+import { ref, onMounted } from 'vue';
+import { db } from '../firebaseConfig.js'; // Adjust path to your firebaseConfig
+import { collection, getDocs } from 'firebase/firestore';
+
+const posts = ref([]); // Array to store posts
+
+// Fetch posts from Firestore
+const fetchPosts = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+    posts.value = querySnapshot.docs.map(doc => ({
+      id: doc.id, // Use Firestore document ID as post id
+      ...doc.data() // Spread the post data
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+};
+
+// Fetch posts when the component is mounted
+onMounted(fetchPosts);
 </script>
 
 <style scoped>
-/* Keeping your existing styles */
 .tab-link {
   cursor: pointer;
   font-size: 14px;

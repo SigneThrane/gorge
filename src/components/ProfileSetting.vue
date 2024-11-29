@@ -96,7 +96,7 @@
 
 <script setup>
   import { ref, onMounted } from 'vue'; 
-  import { db } from '../firebaseconfig.js';
+  import { db } from '../firebaseConfig.js';
   import { collection, getDocs } from 'firebase/firestore';
   
   const profile = ref("Loading...");

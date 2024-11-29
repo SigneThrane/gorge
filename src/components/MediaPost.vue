@@ -1,10 +1,8 @@
 <template>
   <div class="header">
-    <router-link to="/TrendingPage">
-      <button class="back-button" onclick="goBack()"><</button>
-      </router-link>
+      <button class="back-button" @click="goBack"><</button>
       <router-link to="/ProfileMedia" class="no-underline">
-  <h1 class="header-title">{{ headerTitle }}</h1>
+  <h1 class="header-title">FREJA PETERSEN</h1>
 </router-link>
   <div class="header-icons">
     <router-link to="/Notification">
@@ -17,24 +15,43 @@
 </svg></button>
   </div>
 </div>
-  <div class="image-container">
-      <img class="post" src="/public/img/icons/placeholder2.png" alt="Centered Image" />
-  </div>
 
-  <div class="bottom-icons">
-    <img src="/public/img/icons/likeicon.png" alt="Icon 1" class="bottom-icon" />
+<!-- Image Section -->
+<div class="image-container">
+  <!-- Display the image only when it's available -->
+  <img v-if="post && post.imageUrl" :src="post.imageUrl" class="post" alt="Post Image" />
+  <!-- Placeholder if no image available -->
+  <img v-else class="post" src="/public/img/icons/android-chrome-maskable-192x192.png" alt="Placeholder Image" />
+</div>
+
+<div class="bottom-icons">
+ <button id="like" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+</svg></button>
     <p class="number">100</p>
-    <img src="/public/img/icons/commenticon.png" alt="Icon 2" class="bottom-icon" />
+ <button id="comment" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+  <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
+</svg></button>
     <p class="number">12</p>
-    <img src="/public/img/icons/shareicon.png" alt="Icon 3" class="bottom-icon" />
+    <button id="comment" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+  <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+</svg></button>
   </div>
 
-  <div class="info">
-    <h3>{{ title }}</h3>
-    <p>Beskrivelse: {{ description }}</p>
-    <p>Tags: {{ tag }} </p>
-    <p>Link: {{ link }} </p>
-  </div>
+<!-- Post Content Section -->
+<div v-if="post" class="info">
+  <h3>{{ post.title }}</h3>
+  <p>Beskrivelse: {{ post.description }}</p>
+  <p>Tags: {{ post.tag }} </p>
+  <p>Link: {{ post.link}} </p>
+</div>
+
+<!-- Loading State -->
+<div v-else class="loading">
+  <p>Loading...</p>
+</div>
+
 
   <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -73,92 +90,59 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, onMounted } from 'vue'; 
-  import { db } from '../firebaseconfig.js';
-  import { collection, getDocs } from 'firebase/firestore';
-  
-  const headerTitle = ref("Loading...");
-  const title = ref("Loading..."); 
-  const description = ref("Loading..."); 
-  const tag = ref("Loading..."); 
-  const link = ref("Loading..."); 
-  
-  const menuVisible = ref(false);
+<script>
+import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { getDoc, doc } from 'firebase/firestore'; // Assuming you're using Firestore
+import { db } from '../firebaseConfig.js'; // Adjust path to your firebaseConfig
 
-  const toggleMenu = () => {
-    menuVisible.value = !menuVisible.value;
-  };
+export default {
+  name: 'MediaPost',
+  setup() {
+    const route = useRoute();
+    const postId = route.params.id; // Get the post ID from the URL
+    const post = ref(null); // Store the post data
+    const isLoading = ref(true); // Track loading state
 
-  const fetchUsername = async () => {
+    // Function to fetch post data from Firestore
+    const fetchPost = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "username"));
-        querySnapshot.forEach((doc) => {
-          headerTitle.value = doc.data().username1;
-        });
+        // Assuming you have Firestore initialized and "posts" collection
+        const postRef = doc(db, 'posts', postId); // Get the document reference
+        const postSnapshot = await getDoc(postRef); // Fetch the post document
+
+        if (postSnapshot.exists()) {
+          post.value = postSnapshot.data(); // Set the post data
+        } else {
+          console.error("No post found with ID: ", postId);
+        }
       } catch (error) {
-        console.error("Error fetching username:", error);
-        headerTitle.value = "Error loading username";
+        console.error("Error fetching post: ", error);
+      } finally {
+        isLoading.value = false; // Stop loading
       }
     };
 
-  const fetchTitle = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "mediaTitle"));
-      querySnapshot.forEach((doc) => {
-        title.value = doc.data().title;
-      });
-    } catch (error) {
-      console.error("Error fetching title:", error);
-      mediaTitle.value = "Error loading title";
-    }
-  };
+    // Fetch post data when the component is mounted
+    onMounted(fetchPost);
 
-  const fetchDescription = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "description"));
-      querySnapshot.forEach((doc) => {
-        description.value = doc.data().description;
-      });
-    } catch (error) {
-      console.error("Error fetching description:", error);
-      description.value = "Error loading title";
-    }
-  };
+    // goBack method checks if there's a previous page in history
+    const goBack = () => {
+      if (window.history.length > 1) {
+        window.history.back(); // Go to the previous page in the history stack
+      } else {
+        this.$router.push('/TrendingPage'); // If no history, navigate to a default route
+      }
+    };
 
-  const fetchTag = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "tag"));
-      querySnapshot.forEach((doc) => {
-        tag.value = doc.data().Tags;
-      });
-    } catch (error) {
-      console.error("Error fetching tag:", error);
-      tag.value = "Error loading tag";
-    }
-  };
-
-  const fetchLink = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "link"));
-      querySnapshot.forEach((doc) => {
-        link.value = doc.data().link;
-      });
-    } catch (error) {
-      console.error("Error fetching link:", error);
-      link.value = "Error loading link";
-    }
-  };
-  
-  onMounted(() => {
-    fetchUsername();  
-    fetchTitle();      
-    fetchDescription();
-    fetchTag();
-    fetchLink();
-  });
+    return {
+      post,
+      isLoading,
+      goBack, // Expose goBack method to template
+    };
+  },
+};
 </script>
-
 
 <style scoped>
 body {
@@ -264,6 +248,11 @@ h1 {
   margin-left: 40px; 
   cursor: pointer;
   font-size: 20px;
+  border: none;               
+  background: transparent;    
+  text-decoration: none;      
+  outline: none;    
+  color: #B66B4D;
 }
 
 .bottom-icon:hover {

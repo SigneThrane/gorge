@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { auth, db } from "../firebaseconfig.js"; // Import Firebase auth and Firestore
+import { auth, db } from "../firebaseConfig.js"; // Import Firebase auth and Firestore
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; // Import setDoc to specify document IDs
 
