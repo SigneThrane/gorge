@@ -1,42 +1,52 @@
 <template>
   <div class="header">
-      <button class="back-button" @click="goBack"><</button>
-      <router-link to="/ProfileMedia" class="no-underline">
-  <h1 class="header-title">FREJA PETERSEN</h1>
-</router-link>
-  <div class="header-icons">
-    <router-link to="/Notification">
-      <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
-  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
-</svg></button>
+    <button class="back-button" @click="goBack"><</button>
+    <router-link to="/ProfileMedia" class="no-underline">
+      <h1 class="header-title">FREJA PETERSEN</h1>
+    </router-link>
+    <div class="header-icons">
+      <router-link to="/Notification">
+        <button class="icon-button" onclick="showNotifications()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+          </svg>
+        </button>
       </router-link>
-    <button class="icon-button" onclick="sharePage()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
-  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
-</svg></button>
+      <button class="icon-button" onclick="sharePage()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
+          <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
+        </svg>
+      </button>
+    </div>
   </div>
-</div>
 
-<!-- Image Section -->
-<div class="image-container">
-  <!-- Display the image only when it's available -->
-  <img v-if="post && post.imageUrl" :src="post.imageUrl" class="post" alt="Post Image" />
-  <!-- Placeholder if no image available -->
-  <img v-else class="post" src="/public/img/icons/android-chrome-maskable-192x192.png" alt="Placeholder Image" />
-</div>
+  <!-- Image Section -->
+  <div class="image-container">
+    <img v-if="post && post.imageUrl" :src="post.imageUrl" class="post" alt="Post Image" />
+    <img v-else class="post" src="/public/img/icons/android-chrome-maskable-192x192.png" alt="Placeholder Image" />
+  </div>
 
-<div class="bottom-icons">
- <button id="like" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-</svg></button>
-    <p class="number">100</p>
- <button id="comment" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
-  <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
-</svg></button>
+  <!-- Bottom Icons -->
+  <div class="bottom-icons">
+    <button id="like" class="bottom-icon" @click="handleLike">
+      <svg :class="liked ? 'bi-heart-fill' : 'bi-heart'" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+      </svg>
+    </button>
+    <p class="number">{{ post?.likes || 0 }}</p>
+
+    <button id="comment" class="bottom-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
+      </svg>
+    </button>
     <p class="number">12</p>
-    <button id="comment" class="bottom-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
-  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-  <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
-</svg></button>
+
+    <button id="comment" class="bottom-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5zm8-7a.5.5 0 0 1 .5.5v5.707l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 8.107V3.5a.5.5 0 0 1 .5-.5z"/>
+      </svg>
+    </button>
   </div>
 
 <!-- Post Content Section -->
@@ -91,58 +101,89 @@
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import { getDoc, doc } from 'firebase/firestore'; // Assuming you're using Firestore
-import { db } from '../firebaseConfig.js'; // Adjust path to your firebaseConfig
+import { getDoc, doc, updateDoc, increment } from 'firebase/firestore';
+import { useRoute } from 'vue-router';
+import { db } from '../firebaseConfig.js';
 
 export default {
   name: 'MediaPost',
   setup() {
     const route = useRoute();
-    const postId = route.params.id; // Get the post ID from the URL
-    const post = ref(null); // Store the post data
-    const isLoading = ref(true); // Track loading state
+    const postId = route.params.id;
+    const post = ref(null);
+    const isLoading = ref(true);
+    const liked = ref(false);  // This keeps track of whether the post is liked or not
 
-    // Function to fetch post data from Firestore
     const fetchPost = async () => {
       try {
-        // Assuming you have Firestore initialized and "posts" collection
-        const postRef = doc(db, 'posts', postId); // Get the document reference
-        const postSnapshot = await getDoc(postRef); // Fetch the post document
+        const postRef = doc(db, 'posts', postId);
+        const postSnapshot = await getDoc(postRef);
 
         if (postSnapshot.exists()) {
-          post.value = postSnapshot.data(); // Set the post data
+          post.value = postSnapshot.data();
+          liked.value = post.value.likes > 0; // Set liked state based on current likes (optional)
         } else {
-          console.error("No post found with ID: ", postId);
+          console.error('No post found with ID:', postId);
         }
       } catch (error) {
-        console.error("Error fetching post: ", error);
+        console.error('Error fetching post:', error);
       } finally {
-        isLoading.value = false; // Stop loading
+        isLoading.value = false;
       }
     };
 
-    // Fetch post data when the component is mounted
-    onMounted(fetchPost);
+    // Method to handle the like functionality (toggle like/unlike)
+    const handleLike = async () => {
+      try {
+        const postRef = doc(db, 'posts', postId);
+        
+        // If already liked, unlike and decrement the like count
+        if (liked.value) {
+          await updateDoc(postRef, {
+            likes: increment(-1),  // Decrease the likes count
+          });
+          liked.value = false;
+        } else {
+          await updateDoc(postRef, {
+            likes: increment(1),  // Increase the likes count
+          });
+          liked.value = true;
+        }
 
-    // goBack method checks if there's a previous page in history
+        if (post.value) {
+          // Update the post's local likes count based on the change
+          post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
+        }
+      } catch (error) {
+        console.error('Error updating likes:', error);
+      }
+    };
+
+    // Method for the back button (navigates back or to TrendingPage)
     const goBack = () => {
       if (window.history.length > 1) {
-        window.history.back(); // Go to the previous page in the history stack
+        window.history.back();
       } else {
-        this.$router.push('/TrendingPage'); // If no history, navigate to a default route
+        this.$router.push('/TrendingPage');
       }
     };
+
+    // Fetch the post data on mounted
+    onMounted(fetchPost);
 
     return {
       post,
       isLoading,
-      goBack, // Expose goBack method to template
+      goBack,
+      handleLike,
+      liked,
     };
   },
 };
 </script>
+
+
 
 <style scoped>
 body {
@@ -322,4 +363,13 @@ h1 {
 .no-underline {
   text-decoration: none;
 }
+
+.bi-heart-fill {
+  fill: #ff0000; 
+}
+
+.bi-heart {
+  fill: #B66B4D; 
+}
+
 </style>
