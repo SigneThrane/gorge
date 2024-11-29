@@ -1,8 +1,6 @@
 <template>
     <div class="header">
-     <router-link to="/MediaPost/:id">
-      <button class="back-button" onclick="goBack()"><</button>
-       </router-link>
+      <button class="back-button" @click="goBack"><</button>
        <h1 class="header-title">{{ headerTitle }}</h1> 
    <div class="header-icons">
     <router-link to="/ProfileSetting">
@@ -78,59 +76,69 @@
     </template>
     
     <script setup>
-    import { ref, onMounted } from 'vue';
-    import { db } from '../firebaseConfig.js'; // Adjust this path based on your project structure
-    import { collection, getDocs } from 'firebase/firestore';
-    
-    // State for profile info and other data
-    const headerTitle = ref("Loading..."); // Default text while loading
-    const profileInfo = ref("Loading..."); // Default profile info
-    
-    // Images array
-    const images = [
-      { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-      { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-      { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-      { id: 4, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-      { id: 5, src: './img/icons/placeholder1.png', alt: 'Image 5' },
-      { id: 6, src: './img/icons/placeholder2.png', alt: 'Image 6' },
-      { id: 7, src: './img/icons/placeholder1.png', alt: 'Image 7' },
-      { id: 8, src: './img/icons/placeholder2.png', alt: 'Image 8' }
-    ];
-    
-    // Fetch the username
-    const fetchUsername = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "username"));
-        querySnapshot.forEach((doc) => {
-          headerTitle.value = doc.data().username;
-        });
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        headerTitle.value = "Error loading username";
-      }
-    };
-    
-    // Fetch the profile info
-    const fetchProfileInfo = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "profileInfo"));
-        querySnapshot.forEach((doc) => {
-          profileInfo.value = doc.data().info; // Assuming `info` field exists
-        });
-      } catch (error) {
-        console.error("Error fetching profile info:", error);
-        profileInfo.value = "Error loading profile info";
-      }
-    };
-    
-    // Lifecycle hook to fetch data on component mount
-    onMounted(() => {
-      fetchUsername();       // Fetch username
-      fetchProfileInfo();    // Fetch profile info
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { db } from '../firebaseConfig.js'; // Adjust based on your project structure
+import { collection, getDocs } from 'firebase/firestore';
+
+const router = useRouter();
+
+// State for profile info and other data
+const headerTitle = ref("Loading...");
+const profileInfo = ref("Loading...");
+const images = [
+  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
+  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
+  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
+  { id: 4, src: './img/icons/placeholder1.png', alt: 'Image 4' },
+  { id: 5, src: './img/icons/placeholder1.png', alt: 'Image 5' },
+  { id: 6, src: './img/icons/placeholder2.png', alt: 'Image 6' },
+  { id: 7, src: './img/icons/placeholder1.png', alt: 'Image 7' },
+  { id: 8, src: './img/icons/placeholder2.png', alt: 'Image 8' }
+];
+
+// Back button functionality
+const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    router.push('/TrendingPage'); // Default route if no history
+  }
+};
+
+// Fetch username
+const fetchUsername = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "username"));
+    querySnapshot.forEach((doc) => {
+      headerTitle.value = doc.data().username;
     });
-    </script>
-    
+  } catch (error) {
+    console.error("Error fetching username:", error);
+    headerTitle.value = "Error loading username";
+  }
+};
+
+// Fetch profile info
+const fetchProfileInfo = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "profileInfo"));
+    querySnapshot.forEach((doc) => {
+      profileInfo.value = doc.data().info; // Assuming `info` field exists
+    });
+  } catch (error) {
+    console.error("Error fetching profile info:", error);
+    profileInfo.value = "Error loading profile info";
+  }
+};
+
+// Lifecycle hook
+onMounted(() => {
+  fetchUsername();
+  fetchProfileInfo();
+});
+</script>
+
        
 <style scoped>
 *,

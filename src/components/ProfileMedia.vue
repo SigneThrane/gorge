@@ -1,8 +1,6 @@
 <template>
    <div class="header">
-    <router-link to="/MediaPost">
-     <button class="back-button" onclick="goBack()"><</button>
-      </router-link>
+    <button class="back-button" @click="goBack"><</button>
       <h1 class="header-title">{{ headerTitle }}</h1> 
   <div class="header-icons">
     <router-link to="/Notification">
@@ -87,6 +85,13 @@
     // State for profile info and other data
     const headerTitle = ref("Loading..."); // Default text while loading
     const profileInfo = ref("Loading..."); // Default profile info
+    const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    router.push('/TrendingPage'); // Default route if no history
+  }
+};
     
     // Images array
     const images = [
