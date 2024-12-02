@@ -33,11 +33,11 @@
     </button>
     <p class="number">{{ post?.likes || 0 }}</p>
 
-    <button id="comment" class="bottom-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
-        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
-      </svg>
-    </button>
+    <button class="bottom-icon" @click="toggleCommentSection">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+    <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
+  </svg>
+</button>
     <p class="number">12</p>
     <button id="comment" class="bottom-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
@@ -46,10 +46,14 @@
     </button>
   </div>
 
-      <div class="comment-section">
-        <p>Hvad synes i?</p>
-        <input class="comment-input" type="text" placeholder="skriv den første kommentar">
-      </div>
+  <div v-if="showComments" class="comment-section">
+  <p>Hvad synes i?</p>
+  <div class="input-row">
+    <img src="/public/img/icons/placeholder4.png" alt="profile-picture">
+    <!-- Add ref to focus the input -->
+    <input class="comment-input" type="text" placeholder="Skriv kommentar" ref="commentInput">
+  </div>
+</div>
 
 <div v-if="post" class="info">
   <h3>{{ post.title }}</h3>
@@ -109,12 +113,16 @@ import { db } from '../firebaseConfig.js';
 export default {
   name: 'MediaPost',
   setup() {
+    // Get the current post ID from the route
     const route = useRoute();
     const postId = route.params.id;
-    const post = ref(null);
-    const isLoading = ref(true);
-    const liked = ref(false);  
+    const post = ref(null);  // The post data
+    const isLoading = ref(true);  // To handle loading state
+    const liked = ref(false);  // To track the like status
+    const showComments = ref(false);  // To toggle comment section visibility
+    const commentInput = ref(null);  // Reference to the comment input field
 
+    // Fetch the post data from Firestore
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -122,35 +130,36 @@ export default {
 
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
-          liked.value = post.value.likes > 0; 
+          liked.value = post.value.likes > 0;  // Set liked status based on the post data
         } else {
           console.error('No post found with ID:', postId);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
       } finally {
-        isLoading.value = false;
+        isLoading.value = false;  // Stop loading when data is fetched
       }
     };
 
+    // Handle like button click to toggle like status
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
         
         if (liked.value) {
           await updateDoc(postRef, {
-            likes: increment(-1),  
+            likes: increment(-1),  // Decrement likes
           });
           liked.value = false;
         } else {
           await updateDoc(postRef, {
-            likes: increment(1),  
+            likes: increment(1),  // Increment likes
           });
           liked.value = true;
         }
 
+        // Update the likes count locally as well
         if (post.value) {
-
           post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
         }
       } catch (error) {
@@ -158,7 +167,7 @@ export default {
       }
     };
 
-
+    // Go back to the previous page or Trending page if no history exists
     const goBack = () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -167,20 +176,32 @@ export default {
       }
     };
 
+    // Toggle visibility of the comment section and focus the input field
+    const toggleCommentSection = () => {
+      showComments.value = !showComments.value;  // Toggle comment section visibility
+
+      if (showComments.value && commentInput.value) {
+        commentInput.value.focus();  // Focus on the input field to bring up the keyboard
+      }
+    };
+
+    // Fetch the post data on component mount
     onMounted(fetchPost);
 
     return {
       post,
       isLoading,
+      liked,
+      showComments,
+      commentInput,
       goBack,
       handleLike,
-      liked,
+      toggleCommentSection,
     };
   },
 };
+
 </script>
-
-
 
 <style scoped>
 body {
@@ -259,9 +280,10 @@ h1 {
 .info {
   font-size: 15px;
   color: #643C2C;
-  margin-top: 5%;
-  padding: 9%;
+  padding-left: 9%;
+  padding-right: 9%;
   font-family: "Quicksand", serif;
+  margin-top: 7%;
 }
 
 .info p {
@@ -281,7 +303,7 @@ h1 {
 .bottom-icon {
   width: 26px; 
   height: 24px; 
-  margin-left: 40px; 
+  margin-left: 25px; 
   cursor: pointer;
   font-size: 20px;
   border: none;               
@@ -374,16 +396,36 @@ h1 {
   font-family: "Quicksand", serif; 
 }
 
+.comment-section p{
+  color: #643C2C;
+  font-size: 15px;
+  margin-top: 5%;
+}
+
 .comment-input{
 margin-top: 2.5%;
-width: 75%;
+width: 60%;
 padding: 10px 15px;
 font-size: 13.1px;
-border: 1px solid #643C2C ;
+border: 1px solid #dad0c6 ;
 border-radius: 10px;
 outline: none;
 font-family: "Quicksand", serif; 
 background-color: #FCF7F2;
 }
 
+.input-row{
+display: flex;
+align-items: center;
+gap: 10px;
+margin-top: 1%;
+margin-bottom: 5%;
+}
+
+.input-row img{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-top: 6px;
+}
 </style>
