@@ -26,27 +26,27 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // To navigate after login
-import { auth } from "../firebaseConfig";  // Importing the auth instance from firebaseConfig
-import { signInWithEmailAndPassword } from "firebase/auth"; // Import Firebase method for signing in
+import { useRouter } from "vue-router"; 
+import { auth } from "../firebaseConfig";  
+import { signInWithEmailAndPassword } from "firebase/auth"; 
 
-const email = ref("");  // User's email
-const password = ref("");  // User's password
+const email = ref(""); 
+const password = ref("");  
 
-const router = useRouter(); // Vue Router to navigate
+const router = useRouter(); 
 
-// Function to handle login
+
 const login = async () => {
   try {
-    // Call Firebase Auth to sign in the user
+
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
 
-    // Successfully logged in, navigate to the next page (e.g., the trending page or home page)
+
     alert("Logged in successfully!");
-    router.push("/TrendingPage");  // You can change this to the appropriate page in your app
+    router.push("/TrendingPage");  
 
   } catch (error) {
-    // If login fails, log the error and alert the user
+
     console.error("Login failed:", error);
     alert("Invalid email or password.");
   }

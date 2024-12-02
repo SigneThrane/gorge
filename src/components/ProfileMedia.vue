@@ -34,12 +34,13 @@
    </div>
    
    <div class="image-grid">
-       <div class="image" v-for="n in images" :key="n.id">
-         <router-link to="/MediaPost">
-           <img :src="n.src" :alt="n.alt" />
-       </router-link>
-       </div>
-     </div>
+    <div class="image" v-for="post in posts" :key="post.id">
+      <router-link :to="`/MediaPost/${post.id}`">
+        <img :src="post.imageUrl" :alt="post.title" />
+      </router-link>
+    </div>
+  </div>
+
      <div class="fixed-bottom-box">
     <div class="fixed-nav">
 
@@ -79,33 +80,34 @@
    
    <script setup>
     import { ref, onMounted } from 'vue';
-    import { db } from '../firebaseConfig.js'; // Adjust this path based on your project structure
+    import { db } from '../firebaseConfig.js'; 
     import { collection, getDocs } from 'firebase/firestore';
     
-    // State for profile info and other data
-    const headerTitle = ref("Loading..."); // Default text while loading
-    const profileInfo = ref("Loading..."); // Default profile info
+    const headerTitle = ref("Loading..."); 
+    const profileInfo = ref("Loading..."); 
     const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    router.push('/TrendingPage'); // Default route if no history
+    router.push('/TrendingPage'); 
   }
 };
+const posts = ref([]); 
+
+const fetchPosts = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+    posts.value = querySnapshot.docs.map(doc => ({
+      id: doc.id, 
+      ...doc.data() 
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+};
+
+onMounted(fetchPosts);
     
-    // Images array
-    const images = [
-      { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-      { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-      { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-      { id: 4, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-      { id: 5, src: './img/icons/placeholder1.png', alt: 'Image 5' },
-      { id: 6, src: './img/icons/placeholder2.png', alt: 'Image 6' },
-      { id: 7, src: './img/icons/placeholder1.png', alt: 'Image 7' },
-      { id: 8, src: './img/icons/placeholder2.png', alt: 'Image 8' }
-    ];
-    
-    // Fetch the username
     const fetchUsername = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "username"));
@@ -118,12 +120,11 @@
       }
     };
     
-    // Fetch the profile info
     const fetchProfileInfo = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "profileInfo"));
         querySnapshot.forEach((doc) => {
-          profileInfo.value = doc.data().info2; // Assuming `info` field exists
+          profileInfo.value = doc.data().info2; 
         });
       } catch (error) {
         console.error("Error fetching profile info:", error);
@@ -131,10 +132,9 @@
       }
     };
     
-    // Lifecycle hook to fetch data on component mount
     onMounted(() => {
-      fetchUsername();       // Fetch username
-      fetchProfileInfo();    // Fetch profile info
+      fetchUsername();       
+      fetchProfileInfo();    
     });
     </script>
  
@@ -153,7 +153,6 @@ body {
   overflow-x: hidden;
 }
 
- /*Profile info*/
  .image-container {
    display: flex;
    justify-content: center;  
@@ -256,13 +255,12 @@ body {
    padding: 5%;
  }
  
-  /*Posts*/
  .image-grid {
    display: grid;
    grid-template-columns: 1fr 1fr;
    gap: 10px;
-   padding: 20px; /* adjust as necessary */
-   overflow: hidden; /* Ensure no scrolling */
+   padding: 20px;
+   overflow: hidden; 
 }
  
  .image img {
@@ -294,7 +292,7 @@ body {
    position: relative;
    width: 100%;
    padding-top: 100%; 
-   overflow: hidden; /* Ensures images don't overflow */
+   overflow: hidden; 
  }
  
  .image img {

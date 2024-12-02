@@ -101,11 +101,10 @@ const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    router.push('/TrendingPage'); // Default route if no history
+    router.push('/TrendingPage'); 
   }
 };
 
-// Handle image selection
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -114,27 +113,24 @@ const handleImageUpload = (event) => {
   }
 };
 
-// Upload image to Cloudinary
 const uploadImageToCloudinary = async (image) => {
   const formData = new FormData();
   formData.append("file", image);
-  formData.append("upload_preset", "ml_default"); // Replace with your actual preset
-  formData.append("cloud_name", "dfyymggsw"); // Replace with your Cloudinary cloud name
+  formData.append("upload_preset", "ml_default"); 
+  formData.append("cloud_name", "dfyymggsw"); 
 
-  // Log the FormData object for debugging
   console.log("FormData to be sent:", formData);
 
   try {
     const response = await axios.post(`https://api.cloudinary.com/v1_1/dfyymggsw/image/upload`, formData);
-    console.log("Cloudinary Response:", response.data); // Debugging Cloudinary response
-    return response.data.secure_url; // URL of the uploaded image
+    console.log("Cloudinary Response:", response.data); 
+    return response.data.secure_url; 
   } catch (error) {
     console.error("Error uploading image:", error.response || error);
     throw new Error("Failed to upload image to Cloudinary");
   }
 };
 
-// Upload post with image to Firebase
 const uploadPost = async () => {
   if (!title.value || !description.value) {
     alert("Please fill in all required fields!");
@@ -151,34 +147,30 @@ const uploadPost = async () => {
       return;
     }
 
-    // Upload image to Cloudinary if selected
     let imageUrl = null;
     if (selectedImage.value) {
       imageUrl = await uploadImageToCloudinary(selectedImage.value);
       console.log("Image uploaded to Cloudinary:", imageUrl);
     }
 
-    // Create post data to save to Firestore
     const post = {
       title: title.value,
       description: description.value,
       tag: tag.value || null,
       link: link.value || null,
-      imageUrl: imageUrl,  // Save the image URL from Cloudinary
+      imageUrl: imageUrl,  
       userId: user.uid,
       createdAt: serverTimestamp(),
     };
 
-    // Add post to Firestore
     await addDoc(collection(db, "posts"), post);
     alert("Post uploaded successfully!");
 
-    // Clear fields after upload
     title.value = "";
     description.value = "";
     tag.value = "";
     link.value = "";
-    selectedImage.value = null; // Clear the selected image
+    selectedImage.value = null; 
   } catch (error) {
     console.error("Error uploading post:", error);
     alert("Failed to upload post.");

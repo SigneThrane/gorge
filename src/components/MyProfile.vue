@@ -32,12 +32,13 @@
    </div>
    
    <div class="image-grid">
-       <div class="image" v-for="n in images" :key="n.id">
-         <router-link to="/MediaPost">
-           <img :src="n.src" :alt="n.alt" />
-       </router-link>
-       </div>
-     </div>
+    <div class="image" v-for="post in posts" :key="post.id">
+      <router-link :to="`/MediaPost/${post.id}`">
+        <img :src="post.imageUrl" :alt="post.title" />
+      </router-link>
+    </div>
+  </div>
+
      <div class="fixed-bottom-box">
     <div class="fixed-nav">
 
@@ -78,35 +79,37 @@
     <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { db } from '../firebaseConfig.js'; // Adjust based on your project structure
+import { db } from '../firebaseConfig.js'; 
 import { collection, getDocs } from 'firebase/firestore';
 
 const router = useRouter();
 
-// State for profile info and other data
+const posts = ref([]); 
+
+const fetchPosts = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+    posts.value = querySnapshot.docs.map(doc => ({
+      id: doc.id, 
+      ...doc.data() 
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+};
+
+onMounted(fetchPosts);
 const headerTitle = ref("Loading...");
 const profileInfo = ref("Loading...");
-const images = [
-  { id: 1, src: './img/icons/placeholder1.png', alt: 'Image 1' },
-  { id: 2, src: './img/icons/placeholder2.png', alt: 'Image 2' },
-  { id: 3, src: './img/icons/placeholder3.png', alt: 'Image 3' },
-  { id: 4, src: './img/icons/placeholder1.png', alt: 'Image 4' },
-  { id: 5, src: './img/icons/placeholder1.png', alt: 'Image 5' },
-  { id: 6, src: './img/icons/placeholder2.png', alt: 'Image 6' },
-  { id: 7, src: './img/icons/placeholder1.png', alt: 'Image 7' },
-  { id: 8, src: './img/icons/placeholder2.png', alt: 'Image 8' }
-];
 
-// Back button functionality
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    router.push('/TrendingPage'); // Default route if no history
+    router.push('/TrendingPage'); 
   }
 };
 
-// Fetch username
 const fetchUsername = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "username"));
@@ -119,12 +122,11 @@ const fetchUsername = async () => {
   }
 };
 
-// Fetch profile info
 const fetchProfileInfo = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "profileInfo"));
     querySnapshot.forEach((doc) => {
-      profileInfo.value = doc.data().info; // Assuming `info` field exists
+      profileInfo.value = doc.data().info; 
     });
   } catch (error) {
     console.error("Error fetching profile info:", error);
@@ -132,7 +134,6 @@ const fetchProfileInfo = async () => {
   }
 };
 
-// Lifecycle hook
 onMounted(() => {
   fetchUsername();
   fetchProfileInfo();
@@ -252,7 +253,6 @@ body {
    font-size: 14px;
  }
 
- /*Posts*/
  .backgroundcolor{
    background-color: #000000;
    padding: 5%;
@@ -262,8 +262,8 @@ body {
    display: grid;
    grid-template-columns: 1fr 1fr;
    gap: 10px;
-   padding: 20px; /* adjust as necessary */
-   overflow: hidden; /* Ensure no scrolling */
+   padding: 20px; 
+   overflow: hidden; 
 }
  
  .image img {
@@ -295,7 +295,7 @@ body {
    position: relative;
    width: 100%;
    padding-top: 100%; 
-   overflow: hidden; /* Ensures images don't overflow */
+   overflow: hidden; 
  }
  
  .image img {
@@ -315,7 +315,6 @@ body {
    height: 24px;
  }
 
- /* Header*/
  .header {
    display: flex;
    align-items: center;

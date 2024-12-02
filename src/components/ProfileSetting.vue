@@ -14,13 +14,11 @@
       <p>{{ changeProfile }}</p>
     </div>
 
-    <!-- "Omkring dig" Title and Line -->
     <div class="section-title">
       <h2>{{ about }}</h2>
       <div class="line"></div>
     </div>
 
-    <!-- User Info: Brugernavn -->
     <div class="user-info">
       <p>{{ username }}</p>
       <p class="username">Cathia Nielsen</p>

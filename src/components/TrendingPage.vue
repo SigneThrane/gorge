@@ -21,7 +21,6 @@
 
   <div class="image-grid">
     <div class="image" v-for="post in posts" :key="post.id">
-      <!-- Maintain the same structure -->
       <router-link :to="`/MediaPost/${post.id}`">
         <img :src="post.imageUrl" :alt="post.title" />
       </router-link>
@@ -67,25 +66,23 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { db } from '../firebaseConfig.js'; // Adjust path to your firebaseConfig
+import { db } from '../firebaseConfig.js'; 
 import { collection, getDocs } from 'firebase/firestore';
 
-const posts = ref([]); // Array to store posts
+const posts = ref([]); 
 
-// Fetch posts from Firestore
 const fetchPosts = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'posts'));
     posts.value = querySnapshot.docs.map(doc => ({
-      id: doc.id, // Use Firestore document ID as post id
-      ...doc.data() // Spread the post data
+      id: doc.id, 
+      ...doc.data() 
     }));
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
 };
 
-// Fetch posts when the component is mounted
 onMounted(fetchPosts);
 </script>
 
@@ -217,7 +214,7 @@ body {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s ease;
-  transform: translateY(-15%); /* Elevates the add button */
+  transform: translateY(-15%); 
 }
 
 .add-button:hover {

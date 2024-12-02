@@ -18,11 +18,10 @@
 
 <script setup>
 import { ref } from "vue";
-import { db, auth } from "../firebaseConfig.js"; // Import Firebase Firestore and Auth
+import { db, auth } from "../firebaseConfig.js"; 
 import { doc, updateDoc } from "firebase/firestore";
-import { useRouter } from "vue-router"; // To navigate to the next page after saving data
+import { useRouter } from "vue-router"; 
 
-// Reactive state variables
 const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
@@ -30,7 +29,7 @@ const router = useRouter();
 
 const saveProfileInfo = async () => {
   try {
-    // Get the current user
+
     const user = auth.currentUser;
 
     if (!user) {
@@ -38,10 +37,10 @@ const saveProfileInfo = async () => {
       return;
     }
 
-    // Reference the Firestore document for this user
+  
     const userDocRef = doc(db, "users", user.uid);
 
-    // Update the Firestore document with the additional info
+
     await updateDoc(userDocRef, {
       age: age.value,
       city: city.value,
@@ -50,7 +49,7 @@ const saveProfileInfo = async () => {
 
     alert("Profile information saved successfully!");
 
-    // Navigate to the next page (e.g., home page or profile)
+
     router.push("/");
   } catch (error) {
     console.error("Error saving profile information:", error);

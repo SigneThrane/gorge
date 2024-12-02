@@ -8,11 +8,11 @@
         placeholder="Search for users or tags..."
         class="search-input"
       />
-      <!-- Search Button -->
+
       <button @click="addToSearchHistory" class="search-button">
         Search
       </button>
-      <!-- Cancel Button (always visible) -->
+
       <button @click="goBack" class="cancel-button">
         Cancel
       </button>
@@ -21,16 +21,14 @@
     <div v-if="searchResults.length > 0">
       <h3>Results</h3>
       <div v-for="result in searchResults" :key="result.id" class="search-result-item">
-        <p>{{ result.name || result.tag }}</p> <!-- Adjust this depending on whether it's a user or tag -->
+        <p>{{ result.name || result.tag }}</p> 
       </div>
     </div>
 
-    <!-- If no results are found -->
     <div v-else-if="searchQuery && searchResults.length === 0" class="no-results">
       <p>No results found.</p>
     </div>
 
-    <!-- Search History Section -->
     <div class="search-history">
       <h3>Search History</h3>
       <ul>
@@ -90,7 +88,6 @@
    const searchResults = ref([]);
    const router = useRouter();
    
-   // Load search history from localStorage on component mount
    onMounted(() => {
      const savedHistory = localStorage.getItem('searchHistory');
      if (savedHistory) {
@@ -98,17 +95,15 @@
      }
    });
    
-   // Search for users and tags
    const searchData = async () => {
      if (!searchQuery.value) {
-       searchResults.value.length = 0; // Clear previous results
+       searchResults.value.length = 0; 
        return;
      }
    
      try {
-       searchResults.value.length = 0; // Clear previous results before new search
+       searchResults.value.length = 0; 
    
-       // Query for users based on the search query
        const userQuery = query(
          collection(db, 'username'),
          where('username', '>=', searchQuery.value),
@@ -116,10 +111,9 @@
        );
        const userQuerySnapshot = await getDocs(userQuery);
        userQuerySnapshot.forEach(doc => {
-         searchResults.value.push({ id: doc.id, name: doc.data().username, type: 'user' }); // Mark this as a user
+         searchResults.value.push({ id: doc.id, name: doc.data().username, type: 'user' }); 
        });
    
-       // Query for tags based on the search query
        const tagQuery = query(
          collection(db, 'tag'),
          where('tag', '>=', searchQuery.value),
@@ -127,29 +121,26 @@
        );
        const tagQuerySnapshot = await getDocs(tagQuery);
        tagQuerySnapshot.forEach(doc => {
-         searchResults.value.push({ id: doc.id, tag: doc.data().tag, type: 'tag' }); // Mark this as a tag
+         searchResults.value.push({ id: doc.id, tag: doc.data().tag, type: 'tag' }); 
        });
      } catch (error) {
        console.error('Error fetching search results: ', error);
      }
    };
    
-   // Add search query to history and save it
    const addToSearchHistory = () => {
      if (searchQuery.value && !searchHistory.value.includes(searchQuery.value)) {
        searchHistory.value.push(searchQuery.value);
        localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
      }
-     searchQuery.value = ''; // Clear the search input after adding to history
+     searchQuery.value = ''; 
    };
    
-   // Delete a search history item by index
    const deleteFromHistory = (index) => {
      searchHistory.value.splice(index, 1);
      localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
    };
    
-   // Go back to the previous page
    const goBack = () => {
      router.back();
    };
@@ -239,7 +230,6 @@ body {
   cursor: pointer;
 }
 
-/* Cancel Button Styling */
 .cancel-button {
   background-color: #c4c4c4;
   color: white;

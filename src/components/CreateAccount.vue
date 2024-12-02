@@ -22,9 +22,9 @@
 
 <script setup>
 import { ref } from "vue";
-import { auth, db } from "../firebaseConfig.js"; // Import Firebase auth and Firestore
+import { auth, db } from "../firebaseConfig.js"; 
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; // Import setDoc to specify document IDs
+import { doc, setDoc } from "firebase/firestore"; 
 
 const fullName = ref("");
 const username = ref("");
@@ -33,17 +33,17 @@ const password = ref("");
 
 const createAccount = async () => {
   try {
-    // Create user with Firebase Auth
+
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
     const user = userCredential.user;
 
-    // Set user data in Firestore using the user's UID as the document ID
-    const userDocRef = doc(db, "users", user.uid); // Using the UID as the document ID
+
+    const userDocRef = doc(db, "users", user.uid); 
     await setDoc(userDocRef, {
       fullName: fullName.value,
       username: username.value,
       email: email.value,
-      uid: user.uid, // Link user info to their Firebase Auth UID
+      uid: user.uid, 
     });
 
     alert("Account created successfully!");

@@ -20,13 +20,11 @@
     </div>
   </div>
 
-  <!-- Image Section -->
   <div class="image-container">
     <img v-if="post && post.imageUrl" :src="post.imageUrl" class="post" alt="Post Image" />
     <img v-else class="post" src="/public/img/icons/android-chrome-maskable-192x192.png" alt="Placeholder Image" />
   </div>
 
-  <!-- Bottom Icons -->
   <div class="bottom-icons">
     <button id="like" class="bottom-icon" @click="handleLike">
       <svg :class="liked ? 'bi-heart-fill' : 'bi-heart'" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
@@ -41,7 +39,6 @@
       </svg>
     </button>
     <p class="number">12</p>
-
     <button id="comment" class="bottom-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5zm8-7a.5.5 0 0 1 .5.5v5.707l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 8.107V3.5a.5.5 0 0 1 .5-.5z"/>
@@ -49,7 +46,11 @@
     </button>
   </div>
 
-<!-- Post Content Section -->
+      <div class="comment-section">
+        <p>Hvad synes i?</p>
+        <input class="comment-input" type="text" placeholder="skriv den første kommentar">
+      </div>
+
 <div v-if="post" class="info">
   <h3>{{ post.title }}</h3>
   <p>Beskrivelse: {{ post.description }}</p>
@@ -57,7 +58,6 @@
   <p>Link: {{ post.link}} </p>
 </div>
 
-<!-- Loading State -->
 <div v-else class="loading">
   <p>Loading...</p>
 </div>
@@ -113,7 +113,7 @@ export default {
     const postId = route.params.id;
     const post = ref(null);
     const isLoading = ref(true);
-    const liked = ref(false);  // This keeps track of whether the post is liked or not
+    const liked = ref(false);  
 
     const fetchPost = async () => {
       try {
@@ -122,7 +122,7 @@ export default {
 
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
-          liked.value = post.value.likes > 0; // Set liked state based on current likes (optional)
+          liked.value = post.value.likes > 0; 
         } else {
           console.error('No post found with ID:', postId);
         }
@@ -133,26 +133,24 @@ export default {
       }
     };
 
-    // Method to handle the like functionality (toggle like/unlike)
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
         
-        // If already liked, unlike and decrement the like count
         if (liked.value) {
           await updateDoc(postRef, {
-            likes: increment(-1),  // Decrease the likes count
+            likes: increment(-1),  
           });
           liked.value = false;
         } else {
           await updateDoc(postRef, {
-            likes: increment(1),  // Increase the likes count
+            likes: increment(1),  
           });
           liked.value = true;
         }
 
         if (post.value) {
-          // Update the post's local likes count based on the change
+
           post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
         }
       } catch (error) {
@@ -160,7 +158,7 @@ export default {
       }
     };
 
-    // Method for the back button (navigates back or to TrendingPage)
+
     const goBack = () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -169,7 +167,6 @@ export default {
       }
     };
 
-    // Fetch the post data on mounted
     onMounted(fetchPost);
 
     return {
@@ -262,7 +259,7 @@ h1 {
 .info {
   font-size: 15px;
   color: #643C2C;
-  margin-top: 10%;
+  margin-top: 5%;
   padding: 9%;
   font-family: "Quicksand", serif;
 }
@@ -277,8 +274,6 @@ h1 {
 
 .bottom-icons {
   display: flex;
-  justify-content: flex-end; 
-  position: fixed;
   width: auto;
   padding: 20px 10px; 
 }
@@ -365,11 +360,30 @@ h1 {
 }
 
 .bi-heart-fill {
-  fill: #ff0000; 
+  fill: #d12e2e; 
 }
 
 .bi-heart {
   fill: #B66B4D; 
+}
+
+.comment-section{
+  font-size: 15px;
+  color: #643C2C;
+  padding-left: 9%;
+  font-family: "Quicksand", serif; 
+}
+
+.comment-input{
+margin-top: 2.5%;
+width: 75%;
+padding: 10px 15px;
+font-size: 13.1px;
+border: 1px solid #643C2C ;
+border-radius: 10px;
+outline: none;
+font-family: "Quicksand", serif; 
+background-color: #FCF7F2;
 }
 
 </style>
