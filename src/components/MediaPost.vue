@@ -34,25 +34,34 @@
     <p class="number">{{ post?.likes || 0 }}</p>
 
     <button class="bottom-icon" @click="toggleCommentSection">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
-    <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
-  </svg>
-</button>
-    <p class="number">12</p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/>
+      </svg>
+    </button>
+    <p class="number">{{ comments.length }}</p>
     <button id="comment" class="bottom-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
-        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5zm8-7a.5.5 0 0 1 .5.5v5.707l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 8.107V3.5a.5.5 0 0 1 .5-.5z"/>
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5-.5 0 0 1 .5-.5zm8-7a.5.5 0 0 1 .5.5v5.707l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 8.107V3.5a.5.5 0 0 1 .5-.5z"/>
       </svg>
     </button>
   </div>
 
   <div v-if="showComments" class="comment-section">
   <p>Hvad synes i?</p>
+  
+  <!-- Input for adding a comment -->
   <div class="input-row">
     <img src="/public/img/icons/placeholder4.png" alt="profile-picture">
-    <!-- Add ref to focus the input -->
-    <input class="comment-input" type="text" placeholder="Skriv kommentar" ref="commentInput">
+    <input class="comment-input" type="text" placeholder="Skriv kommentar" ref="commentInput" @keyup.enter="addComment">
   </div>
+
+  <!-- Section to display the comments -->
+  <div v-if="comments && comments.length > 0" class="comments-list">
+    <div v-for="(comment, index) in comments" :key="index" class="comment">
+      <p><strong>{{ comment.text }}</strong></p>
+    </div>
+  </div>
+  <p v-else>No comments yet.</p>
 </div>
 
 <div v-if="post" class="info">
@@ -106,23 +115,22 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { getDoc, doc, updateDoc, increment } from 'firebase/firestore';
+import { getDoc, doc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs } from 'firebase/firestore';
 import { useRoute } from 'vue-router';
 import { db } from '../firebaseConfig.js';
 
 export default {
   name: 'MediaPost',
   setup() {
-    // Get the current post ID from the route
     const route = useRoute();
     const postId = route.params.id;
-    const post = ref(null);  // The post data
-    const isLoading = ref(true);  // To handle loading state
-    const liked = ref(false);  // To track the like status
-    const showComments = ref(false);  // To toggle comment section visibility
-    const commentInput = ref(null);  // Reference to the comment input field
+    const post = ref(null);
+    const isLoading = ref(true);
+    const liked = ref(false);
+    const showComments = ref(false);
+    const commentInput = ref(null);
+    const comments = ref([]);
 
-    // Fetch the post data from Firestore
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -130,35 +138,63 @@ export default {
 
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
-          liked.value = post.value.likes > 0;  // Set liked status based on the post data
+          liked.value = post.value.likes > 0;
         } else {
           console.error('No post found with ID:', postId);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
       } finally {
-        isLoading.value = false;  // Stop loading when data is fetched
+        isLoading.value = false;
       }
     };
 
-    // Handle like button click to toggle like status
+    const fetchComments = async () => {
+      try {
+        const commentsRef = collection(db, 'posts', postId, 'comments');
+        const q = query(commentsRef, orderBy('timestamp'));
+        const querySnapshot = await getDocs(q);
+        
+        comments.value = querySnapshot.docs.map(doc => doc.data());
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+
+    const addComment = async () => {
+      const commentText = commentInput.value.value.trim();
+      if (commentText === '') return;
+
+      try {
+        const commentsRef = collection(db, 'posts', postId, 'comments');
+        await addDoc(commentsRef, {
+          text: commentText,
+          timestamp: new Date(),
+        });
+        
+        commentInput.value.value = '';
+        fetchComments();
+      } catch (error) {
+        console.error('Error adding comment:', error);
+      }
+    };
+
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
         
         if (liked.value) {
           await updateDoc(postRef, {
-            likes: increment(-1),  // Decrement likes
+            likes: increment(-1),
           });
           liked.value = false;
         } else {
           await updateDoc(postRef, {
-            likes: increment(1),  // Increment likes
+            likes: increment(1),
           });
           liked.value = true;
         }
 
-        // Update the likes count locally as well
         if (post.value) {
           post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
         }
@@ -167,7 +203,6 @@ export default {
       }
     };
 
-    // Go back to the previous page or Trending page if no history exists
     const goBack = () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -176,17 +211,17 @@ export default {
       }
     };
 
-    // Toggle visibility of the comment section and focus the input field
     const toggleCommentSection = () => {
-      showComments.value = !showComments.value;  // Toggle comment section visibility
-
+      showComments.value = !showComments.value;
       if (showComments.value && commentInput.value) {
-        commentInput.value.focus();  // Focus on the input field to bring up the keyboard
+        commentInput.value.focus();
       }
     };
 
-    // Fetch the post data on component mount
-    onMounted(fetchPost);
+    onMounted(() => {
+      fetchPost();
+      fetchComments();
+    });
 
     return {
       post,
@@ -194,9 +229,11 @@ export default {
       liked,
       showComments,
       commentInput,
+      comments,
       goBack,
       handleLike,
       toggleCommentSection,
+      addComment,
     };
   },
 };
