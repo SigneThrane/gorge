@@ -17,13 +17,13 @@
     <p>{{ age }} years, {{ city }}, {{ aesthetic }}</p>
  
  <div class="p-container">
-       <p class="numbers1">1K</p>
+<p class="numbers1">{{ postCount }}</p>  
        <p class="numbers2">10.9 K</p>
        <p class="numbers3">412</p>
      </div>
 
      <div class="p-container1">
-      <p class="numbers">Posts</p>
+      <p class="numbers">Posts</p>  
       <p class="numbers">Followers</p>
       <p class="numbers">Following</p>
      </div>
@@ -36,12 +36,12 @@
    </div>
    
    <div class="image-grid">
-    <div class="image" v-for="post in posts" :key="post.id">
-      <router-link :to="`/MediaPost/${post.id}`">
-        <img :src="post.imageUrl" :alt="post.title" />
-      </router-link>
-    </div>
+  <div class="image" v-for="post in posts" :key="post.id">
+    <router-link :to="`/MediaPost/${post.id}`">
+      <img :src="post.imageUrl" :alt="post.title" />
+    </router-link>
   </div>
+</div>
 
      <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -83,8 +83,8 @@
  <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { auth, db } from '../firebaseConfig';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig'; // Assuming Firebase is set up correctly
+import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 const username = ref("Loading...");
 const age = ref("");
@@ -92,18 +92,21 @@ const city = ref("");
 const aesthetic = ref("");
 const profileImage = ref("/public/img/icons/blankprofile.png"); // Default profile image
 const posts = ref([]);
+const postCount = ref(0); // This will hold the count of posts
 
 const router = useRouter();
 
+// Fetch user data (e.g., username, age, etc.)
 const fetchUserData = async () => {
   try {
-    const user = auth.currentUser;
+    const user = auth.currentUser; // Get the current logged-in user
     if (!user) {
       alert("No user is signed in. Redirecting to login...");
-      router.push('/');
+      router.push('/'); // Redirect to login page if no user is signed in
       return;
     }
 
+    // Fetch the user document using the logged-in user's UID
     const userDocRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userDocRef);
 
@@ -123,18 +126,36 @@ const fetchUserData = async () => {
   }
 };
 
+// Fetch posts for the current user and count them
 const fetchPosts = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, 'posts'));
+    const user = auth.currentUser; // Get the current logged-in user
+    if (!user) {
+      alert("No user is signed in. Redirecting to login...");
+      router.push('/'); // Redirect to login if no user is signed in
+      return;
+    }
+
+    // Query the posts collection where userId matches the logged-in user's UID
+    const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.uid));
+    const querySnapshot = await getDocs(postsQuery);
+
+    // Map over the query snapshot to get the post data
     posts.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Set the post count
+    postCount.value = posts.value.length; // Set the count of posts
+
   } catch (error) {
     console.error('Error fetching posts:', error);
+    alert("An error occurred while fetching posts.");
   }
 };
 
+// Go back to the previous page or navigate to the trending page
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -143,10 +164,12 @@ const goBack = () => {
   }
 };
 
+// Placeholder function for share functionality
 const sharePage = () => {
   alert("Share functionality coming soon!");
 };
 
+// Fetch user data and posts when component is mounted
 onMounted(() => {
   fetchUserData();
   fetchPosts();

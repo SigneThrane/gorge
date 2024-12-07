@@ -5,11 +5,18 @@
   </div>
 
   <div class="profile-picture">
-    <div class="image-container">
-      <img :src="profileImage" alt="Profile Image" />
-      <input type="file" @change="uploadImage" />
-      <p>Ændre profilbillede</p>
-    </div>
+  <div class="image-container">
+    <img :src="profileImage" alt="Profile Image" />
+    
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" @change="uploadImage" />
+    
+    <!-- Custom styled button -->
+    <label for="file-input" class="custom-file-button">
+      Ændre profilbillede
+    </label>
+  </div>
+
 
     <div class="section-title">
       <h2>{{ about }}</h2>
@@ -18,30 +25,33 @@
 
     <div class="user-info">
       <p>Fulde navn</p>
-      <input v-model="fullName" />
+      <input v-model="fullName" class="custom-input" />
     </div>
 
     <div class="user-info">
       <p>Brugernavn</p>
-      <input v-model="username" />
+      <input v-model="username" class="custom-input" />
     </div>
 
     <div class="user-info">
       <p>Alder</p>
-      <input v-model="age" />
+      <input v-model="age" class="custom-input" />
     </div>
 
     <div class="user-info">
       <p>By</p>
-      <input v-model="city" />
+      <input v-model="city" class="custom-input" />
     </div>
 
     <div class="user-info">
       <p>Æstetik</p>
-      <input v-model="aesthetic" />
+      <input v-model="aesthetic" class="custom-input" />
     </div>
 
-    <button @click="saveProfile">Gem profil</button>
+    <div  class="save-button-container">
+      <button id="save" @click="saveProfile">Gem profil</button>
+    </div>
+
   </div>
 
   <div class="fixed-bottom-box">
@@ -166,7 +176,6 @@ const goBack = () => {
 };
 </script>
 
-
 <style scoped>
   body {
     margin: 0;
@@ -279,6 +288,7 @@ const goBack = () => {
   .image-container img {
     max-width: 25%;
     height: auto;
+    border-radius: 15px;
   }
 
   .image-container p {
@@ -288,7 +298,6 @@ const goBack = () => {
     font-family: "Quicksand", serif;
   }
 
-  /* Section Title and Line */
   .section-title {
     margin-top: 20px;
   }
@@ -338,7 +347,6 @@ const goBack = () => {
     color: #B66B4D;
   }
 
-  /* Customize profile */
   .grid-container {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -359,4 +367,59 @@ const goBack = () => {
     border-radius: 50%;
     object-fit: cover;
   }
+
+  #save {
+  background-color: #B66B4D;
+  border-radius: 15px;
+  color: #FCF7F2;
+  padding: 10px 20px; 
+  border: none;
+  cursor: pointer;
+  font-size: 16px; 
+}
+
+.save-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px; 
+}
+
+.custom-input {
+  width: 60%; 
+  padding: 5px; 
+  font-size: 12px; 
+  border: 1px solid #B66B4D; 
+  border-radius: 15px; 
+  background-color: #F9F9F9; 
+  color: #333; 
+  margin-bottom: 10px; 
+  outline: none; 
+  font-family: "Quicksand", serif;
+}
+
+input[type="file"] {
+  display: none; 
+}
+
+.custom-file-button {
+  display: inline-block;
+  background-color: #B66B4D; 
+  color: #FCF7F2; 
+  padding: 10px 20px; 
+  border-radius: 15px; 
+  font-size: 15px; 
+  font-family: "Quicksand", serif;
+  cursor: pointer; 
+  text-align: center; 
+  width: auto;
+  margin-top: 4%;
+}
+
+.custom-file-button:focus {
+  outline: none;
+  box-shadow: 0 0 3px rgba(184, 107, 77, 0.6);
+}
+
 </style>
