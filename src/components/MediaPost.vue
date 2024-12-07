@@ -2,7 +2,8 @@
   <div class="header">
     <button class="back-button" @click="goBack"><</button>
     <router-link to="/ProfileMedia" class="no-underline">
-      <h1 class="header-title">FREJA PETERSEN</h1>
+      <h1 class="header-title" v-if="userName">{{ userName }}</h1>
+      <h1 class="header-title" v-else>Loading user...</h1>
     </router-link>
     <div class="header-icons">
       <router-link to="/Notification">
@@ -13,9 +14,9 @@
         </button>
       </router-link>
       <button class="icon-button" onclick="sharePage()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
-          <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
+</svg>
       </button>
     </div>
   </div>
@@ -39,28 +40,26 @@
       </svg>
     </button>
     <p class="number">{{ comments.length }}</p>
-    <button id="comment" class="bottom-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
-        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5-.5 0 0 1 .5-.5zm8-7a.5.5 0 0 1 .5.5v5.707l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 8.107V3.5a.5.5 0 0 1 .5-.5z"/>
-      </svg>
+
+    <button id="share" class="bottom-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
+</svg>
     </button>
   </div>
 
   <div v-if="showComments" class="comment-section">
-  <p>Hvad synes i?</p>
-  
-  <!-- Input for adding a comment -->
   <div class="input-row">
-    <img src="/public/img/icons/placeholder4.png" alt="profile-picture">
+    <img class="post" :src="profileImage" alt="Profile Image" />
     <input class="comment-input" type="text" placeholder="Skriv kommentar" ref="commentInput" @keyup.enter="addComment">
   </div>
 
-  <!-- Section to display the comments -->
   <div v-if="comments && comments.length > 0" class="comments-list">
-    <div v-for="(comment, index) in comments" :key="index" class="comment">
-      <p><strong>{{ comment.text }}</strong></p>
-    </div>
+  <div v-for="(comment, index) in comments" :key="index" class="comment">
+<p><strong>{{ comment.userName }}</strong></p>
+    <p>{{ comment.text }}</p>
   </div>
+</div>
   <p v-else>No comments yet.</p>
 </div>
 
@@ -74,7 +73,6 @@
 <div v-else class="loading">
   <p>Loading...</p>
 </div>
-
 
   <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -115,9 +113,9 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { getDoc, doc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs } from 'firebase/firestore';
 import { useRoute } from 'vue-router';
-import { db } from '../firebaseConfig.js';
+import { auth, db } from '../firebaseConfig.js';
 
 export default {
   name: 'MediaPost',
@@ -130,7 +128,37 @@ export default {
     const showComments = ref(false);
     const commentInput = ref(null);
     const comments = ref([]);
+    const userName = ref('');  // Will store the username retrieved from the 'users' collection
+    const profileImage = ref('/public/img/icons/blankprofile.png'); // Default profile image
 
+    // Fetch the logged-in user details
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          alert("No user is signed in. Redirecting to login...");
+          this.$router.push('/');  // Redirect to login page if no user is logged in
+          return;
+        }
+
+        // Fetch user details from 'users' collection based on logged-in user UID
+        const userRef = doc(db, 'users', user.uid);
+        const userSnapshot = await getDoc(userRef);
+        
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+          userName.value = userData.username || 'Anonymous';  // Default username if not available
+          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';  // Default profile image if not available
+        } else {
+          console.error('No user data found for the logged-in user.');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        alert('An error occurred while fetching user data.');
+      }
+    };
+
+    // Fetch the post details from Firestore
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -138,6 +166,17 @@ export default {
 
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
+
+          // Fetch the user who posted the post
+          const userRef = doc(db, 'users', post.value.userId);  // Assuming post has a 'userId' field
+          const userSnapshot = await getDoc(userRef);
+          if (userSnapshot.exists()) {
+            const userData = userSnapshot.data();
+            userName.value = userData.username || 'Anonymous';  // Display the username of the person who posted
+          } else {
+            console.error('No user data found for the post author.');
+          }
+
           liked.value = post.value.likes > 0;
         } else {
           console.error('No post found with ID:', postId);
@@ -149,18 +188,36 @@ export default {
       }
     };
 
+    // Fetch the comments for the post
     const fetchComments = async () => {
       try {
         const commentsRef = collection(db, 'posts', postId, 'comments');
         const q = query(commentsRef, orderBy('timestamp'));
         const querySnapshot = await getDocs(q);
         
-        comments.value = querySnapshot.docs.map(doc => doc.data());
+        const fetchedComments = [];
+        querySnapshot.forEach(async (docSnapshot) => {
+          const commentData = docSnapshot.data();
+          
+          // Fetch user details for each comment's userId
+          const userRef = doc(db, 'users', commentData.userId);
+          const userSnapshot = await getDoc(userRef);
+          if (userSnapshot.exists()) {
+            commentData.userName = userSnapshot.data().username || 'Anonymous';  // Add username to the comment
+          } else {
+            commentData.userName = 'Anonymous'; // Default username if user data is not found
+          }
+          
+          fetchedComments.push(commentData);  // Add the comment data with the user's name
+        });
+
+        comments.value = fetchedComments; // Update the comments array
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
     };
 
+    // Add a new comment to the post
     const addComment = async () => {
       const commentText = commentInput.value.value.trim();
       if (commentText === '') return;
@@ -170,6 +227,7 @@ export default {
         await addDoc(commentsRef, {
           text: commentText,
           timestamp: new Date(),
+          userId: auth.currentUser.uid,  // Use the current logged-in user's ID
         });
         
         commentInput.value.value = '';
@@ -179,6 +237,7 @@ export default {
       }
     };
 
+    // Handle like/unlike post
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -203,6 +262,7 @@ export default {
       }
     };
 
+    // Go back to the previous page or TrendingPage
     const goBack = () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -211,6 +271,7 @@ export default {
       }
     };
 
+    // Toggle the visibility of the comments section
     const toggleCommentSection = () => {
       showComments.value = !showComments.value;
       if (showComments.value && commentInput.value) {
@@ -219,8 +280,9 @@ export default {
     };
 
     onMounted(() => {
-      fetchPost();
-      fetchComments();
+      fetchUserData();  // Fetch logged-in user data
+      fetchPost();      // Fetch the post details (and the user who posted)
+      fetchComments();  // Fetch comments if needed
     });
 
     return {
@@ -230,6 +292,8 @@ export default {
       showComments,
       commentInput,
       comments,
+      userName, // Return userName so it can be displayed in the template
+      profileImage, // Return profileImage so it can be used in the template
       goBack,
       handleLike,
       toggleCommentSection,
@@ -237,8 +301,8 @@ export default {
     };
   },
 };
-
 </script>
+
 
 <style scoped>
 body {
@@ -298,9 +362,11 @@ font-weight: 500;
 }
 
 .post {
-  max-width: 100%;        
-  height: auto;
-  border-radius: 50px;
+  width: 300px;  
+  height: 300px; 
+  object-fit: cover; 
+  margin: 10px;  
+  border-radius: 15px;
 }
 
 h1 {
@@ -455,7 +521,6 @@ background-color: #FCF7F2;
 display: flex;
 align-items: center;
 gap: 10px;
-margin-top: 1%;
 margin-bottom: 5%;
 }
 
@@ -464,5 +529,9 @@ margin-bottom: 5%;
   height: 45px;
   border-radius: 50%;
   margin-top: 6px;
+}
+
+#share{
+  margin-top: 1%;
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
    <div class="header">
     <button class="back-button" @click="goBack"><</button>
-      <h1 class="header-title">{{ headerTitle }}</h1> 
+      <h1 class="header-title">Freja Petersen</h1> 
   <div class="header-icons">
     <router-link to="/Notification">
       <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" class="bi bi-bell" viewBox="0 0 16 16">
   <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
 </svg></button>
       </router-link>
-    <button class="icon-button" onclick="sharePage()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000000" class="bi bi-arrow-bar-up" viewBox="0 0 16 13">
-  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
+    <button class="icon-button" onclick="sharePage()">  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
 </svg></button>
   </div>
 </div>
@@ -19,8 +19,8 @@
  
    <img src="/public/img/icons/crown.png" alt="Crown Icon" class="crown-icon-verify" />
  </div>
- <h1>{{ headerTitle }}</h1>
- <p>{{ profileInfo }}</p>
+ <h1>Freja Petersen</h1>
+ <p>21 years, Århus, preppy street style</p>
  <div class="p-container">
        <p class="numbers1">1K</p>
        <p class="numbers2">10.9 K</p>
@@ -30,6 +30,10 @@
       <p class="numbers">Posts</p>
       <p class="numbers">Followers</p>
       <p class="numbers">Following</p>
+     </div>
+
+     <div class="button-container">
+     <button id="edit">Følg</button>
      </div>
    </div>
    
@@ -178,7 +182,7 @@ body {
  .crown-icon-verify:hover {
    opacity: 0.8;  
  }
- 
+
  h1 {
        margin-top: 5%;
        font-size: 24px;
@@ -233,6 +237,7 @@ body {
   justify-content: center; 
   gap: 5px; 
   margin-right: 5%;
+  margin-bottom: 4%;
  }
 
  .p-container1 .numbers {
@@ -337,7 +342,7 @@ body {
    text-align: center;
    font-size: 18px;
    margin: 0;
-   margin-left: 30px; 
+   margin-left: 50px; 
    color: black;
  }
  
@@ -409,5 +414,24 @@ body {
 
 .add-button:hover {
   background-color: #643C2D;
+}
+
+#edit {
+  border-radius: 15px;
+  padding: 10px 20px;
+  background-color: #FC7388;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#edit:hover {
+  background-color: #d46172; 
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;  
 }
     </style>

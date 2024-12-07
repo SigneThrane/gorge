@@ -1,17 +1,14 @@
 <template>
-  <router-link to="/MyProfile">
-    <button class="close-button" @click="closeModal">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-      </svg>
-    </button>
-  </router-link>
+ <div class="header">
+    <button class="back-button" @click="goBack"><</button>
+    <h1 class="header-title">Redigere profil</h1> 
+  </div>
 
   <div class="profile-picture">
-    <h1>{{ profile }}</h1>
     <div class="image-container">
-      <img class="post" src="/public/img/icons/placeholder4.png" alt="Centered Image" />
-      <p>{{ changeProfile }}</p>
+      <img :src="profileImage" alt="Profile Image" />
+      <input type="file" @change="uploadImage" />
+      <p>Ændre profilbillede</p>
     </div>
 
     <div class="section-title">
@@ -20,40 +17,31 @@
     </div>
 
     <div class="user-info">
-      <p>{{ username }}</p>
-      <p class="username">Cathia Nielsen</p>
+      <p>Fulde navn</p>
+      <input v-model="fullName" />
     </div>
-    <div class="user-info">
-      <p>{{ description }}</p>
-      <p class="username">Lorem Ipsum...</p>
-    </div>
-  </div>
 
-  <div class="section-title2">
-      <h2>{{ adjust }}</h2>
-      <div class="line"></div>
+    <div class="user-info">
+      <p>Brugernavn</p>
+      <input v-model="username" />
     </div>
-  <div class="grid-container">
-    <div class="grid-title">{{ background }}</div>
-    <div class="grid-image">
-      <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
+
+    <div class="user-info">
+      <p>Alder</p>
+      <input v-model="age" />
     </div>
-    <div class="grid-title">{{ color }}</div>
-    <div class="grid-image">
-      <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
+
+    <div class="user-info">
+      <p>By</p>
+      <input v-model="city" />
     </div>
-    <div class="grid-title">{{ username }}</div>
-    <div class="grid-image">
-      <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
+
+    <div class="user-info">
+      <p>Æstetik</p>
+      <input v-model="aesthetic" />
     </div>
-    <div class="grid-title">{{ profileActivity }}</div>
-    <div class="grid-image">
-      <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
-    </div>
-    <div class="grid-title">{{ activity }}</div>
-    <div class="grid-image">
-      <img src="/public/img/icons/placeholder2.png" alt="Small Round Image" />
-    </div>
+
+    <button @click="saveProfile">Gem profil</button>
   </div>
 
   <div class="fixed-bottom-box">
@@ -93,162 +81,91 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'; 
-  import { db } from '../firebaseConfig.js';
-  import { collection, getDocs } from 'firebase/firestore';
-  
-  const profile = ref("Loading...");
-  const changeProfile = ref("Loading...");
-  const about = ref("Loading...");
-  const username = ref("Loading...");
-  const description = ref("Loading...");
-  const adjust = ref("Loading...");
-  const background = ref("Loading...");
-  const color = ref("Loading...");
-  const profileActivity = ref("Loading...");
-  const activity = ref("Loading...");
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { auth, db } from '../firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
+import axios from 'axios';
 
-  const menuVisible = ref(false);
+// Form fields
+const username = ref('');
+const fullName = ref('');
+const age = ref('');
+const city = ref('');
+const aesthetic = ref('');
+const profileImage = ref('/public/img/icons/blankprofile.png');
+const about = ref('About Me');
+const selectedImage = ref(null); // To store the selected image
+const isUploading = ref(false); // To handle the upload state
+const router = useRouter();
 
-  const toggleMenu = () => {
-    menuVisible.value = !menuVisible.value;
-  };
+// Cloudinary upload function (from your provided script)
+const uploadImageToCloudinary = async (image) => {
+  const formData = new FormData();
+  formData.append('file', image);
+  formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
+  formData.append('cloud_name', 'dfyymggsw'); // Cloudinary cloud name
 
-  const fetchProfile = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          profile.value = doc.data().profile;
-        });
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        profile.value = "Error loading profile";
-      }
-    };
+  try {
+    const response = await axios.post('https://api.cloudinary.com/v1_1/dfyymggsw/image/upload', formData);
+    console.log('Cloudinary Response:', response.data);
+    return response.data.secure_url; // Return the secure URL of the uploaded image
+  } catch (error) {
+    console.error('Error uploading image:', error.response || error);
+    throw new Error('Failed to upload image to Cloudinary');
+  }
+};
 
-    
-  const fetchchangeProfile = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          changeProfile.value = doc.data().changePicture;
-        });
-      } catch (error) {
-        console.error("Error fetching changeProfile:", error);
-        changeProfile.value = "Error loading changeProfile";
-      }
-    };
+// Upload Image Handler
+const uploadImage = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedImage.value = file; // Save the selected image
+    console.log('Image selected:', selectedImage.value);
 
-    const fetchAbout = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          about.value = doc.data().about;
-        });
-      } catch (error) {
-        console.error("Error fetching about:", error);
-        about.value = "Error loading about";
-      }
-    };
+    try {
+      const imageUrl = await uploadImageToCloudinary(selectedImage.value);
+      profileImage.value = imageUrl; // Update the profile image URL
+      console.log('Profile image uploaded to Cloudinary:', imageUrl);
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+    }
+  }
+};
 
-    
-    const fetchUsername = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          username.value = doc.data().username;
-        });
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        username.value = "Error loading username";
-      }
-    };
+// Save Profile Information
+const saveProfile = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userDocRef = doc(db, 'users', user.uid);
+    await setDoc(
+      userDocRef,
+      {
+        username: username.value,
+        fullName: fullName.value,
+        age: age.value,
+        city: city.value,
+        aesthetic: aesthetic.value,
+        profileImage: profileImage.value, // Save the Cloudinary image URL
+      },
+      { merge: true }
+    );
 
-    const fetchDescription = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          description.value = doc.data().description;
-        });
-      } catch (error) {
-        console.error("Error fetching description:", error);
-        description.value = "Error loading description";
-      }
-    };
+    alert('Profile updated!');
+    router.push('/MyProfile');
+  }
+};
 
-    const fetchAdjust = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          adjust.value = doc.data().adjust;
-        });
-      } catch (error) {
-        console.error("Error fetching adjust:", error);
-        adjust.value = "Error loading adjust";
-      }
-    };
-
-    const fetchBackground = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          background.value = doc.data().background;
-        });
-      } catch (error) {
-        console.error("Error fetching background:", error);
-        background.value = "Error loading background";
-      }
-    };
-
-    const fetchColor = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          color.value = doc.data().color;
-        });
-      } catch (error) {
-        console.error("Error fetching color:", error);
-        color.value = "Error loading color";
-      }
-    };
-
-    const fetchProfileActivity = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          profileActivity.value = doc.data().profileActivity;
-        });
-      } catch (error) {
-        console.error("Error fetching profileActivity:", error);
-        profileActivity.value = "Error loading profileActivity";
-      }
-    };
-
-    const fetchActivity = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "setting"));
-        querySnapshot.forEach((doc) => {
-          activity.value = doc.data().activity;
-        });
-      } catch (error) {
-        console.error("Error fetching activity:", error);
-        activity.value = "Error loading activity";
-      }
-    };
-  
-  onMounted(() => {
-    fetchProfile();  
-    fetchchangeProfile(); 
-    fetchAbout(); 
-    fetchUsername(); 
-    fetchDescription();
-    fetchAdjust();
-    fetchBackground();
-    fetchColor();
-    fetchProfileActivity();
-    fetchActivity();
-  });
+// Go Back Function (Navigate to the previous page)
+const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    router.push('/TrendingPage');
+  }
+};
 </script>
+
 
 <style scoped>
   body {
@@ -259,24 +176,45 @@
   }
 
   /* Header */
-  h1 {
-    margin-top: 12%;
-    font-size: 24px;
-    color: #BC7344;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: bold;
-    font-family: "Quicksand", serif;
-  }
+  .header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 10px 16px;
+   background-color: #FCF7F2;
+   top: 0;
+   z-index: 10;
+ }
 
-  .close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
+ h1 {
+       margin-top: 5%;
+       font-size: 24px;
+       color: #000000;
+       margin-bottom: 15px;
+       text-align: center;
+       font-weight: 500;
+       font-family: "Quicksand", serif;
+       text-transform: uppercase;
+     }
+ 
+ .back-button {
+   font-size: 20px;
+   background: none;
+   border: none;
+   cursor: pointer;
+   margin-top: 2%;
+   color: #000000;
+ }
+ 
+ .header-title {
+   flex-grow: 0.5; 
+   text-align: center;
+   font-size: 18px;
+   margin: 0;
+   color: black;
+   margin-right: 19%;
+   margin-top: 2%;
+ }
 
   /* Nav */
   .fixed-bottom-box {

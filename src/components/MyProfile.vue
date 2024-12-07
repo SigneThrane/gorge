@@ -1,33 +1,37 @@
 <template>
-    <div class="header">
-      <button class="back-button" @click="goBack"><</button>
-       <h1 class="header-title">{{ headerTitle }}</h1> 
-   <div class="header-icons">
-    <router-link to="/ProfileSetting">
-        <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
-  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
-  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+   <div class="header">
+    <button class="back-button" @click="goBack"><</button>
+      <h1 class="header-title">Min profil</h1> 
+  <div class="header-icons">
+    <button class="icon-button" onclick="sharePage()">  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
 </svg></button>
-       </router-link>
-   </div>
- </div>
- <div class="backgroundcolor">
-   <div class="image-container">
-   <img class="post" src="/public/img/icons/placeholder4.png" alt="Centered Image" />
+  </div>
+</div>
+<div class="backgroundcolor">
+  <div class="image-container">
+      <!-- Dynamically display profile picture -->
+      <img class="post" :src="profileImage" alt="Profile Image" />
+    </div>
+ <h1>{{ username }}</h1>
+    <p>{{ age }} years, {{ city }}, {{ aesthetic }}</p>
  
-   <img src="/public/img/icons/crown.png" alt="Crown Icon" class="crown-icon-verify" />
- </div>
- <h1>{{ headerTitle }}</h1>
- <p>{{ profileInfo }}</p>
  <div class="p-container">
        <p class="numbers1">1K</p>
        <p class="numbers2">10.9 K</p>
        <p class="numbers3">412</p>
      </div>
+
      <div class="p-container1">
       <p class="numbers">Posts</p>
       <p class="numbers">Followers</p>
       <p class="numbers">Following</p>
+     </div>
+ 
+     <div class="button-container">
+      <router-link to="/ProfileSetting">
+     <button id="edit">Redigere profil</button>
+    </router-link>
      </div>
    </div>
    
@@ -75,68 +79,77 @@
     </div>
   </div>
     </template>
-    
-    <script setup>
+ 
+ <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { db } from '../firebaseConfig.js'; 
-import { collection, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+
+const username = ref("Loading...");
+const age = ref("");
+const city = ref("");
+const aesthetic = ref("");
+const profileImage = ref("/public/img/icons/blankprofile.png"); // Default profile image
+const posts = ref([]);
 
 const router = useRouter();
 
-const posts = ref([]); 
+const fetchUserData = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("No user is signed in. Redirecting to login...");
+      router.push('/');
+      return;
+    }
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      username.value = userData.username || "Anonymous";
+      age.value = userData.age || "N/A";
+      city.value = userData.city || "Unknown";
+      aesthetic.value = userData.aesthetic || "Not specified";
+      profileImage.value = userData.profileImage || "/public/img/icons/blankprofile.png";
+    } else {
+      alert("No user data found for the logged-in user.");
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    alert("An error occurred while fetching your profile information.");
+  }
+};
 
 const fetchPosts = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'posts'));
     posts.value = querySnapshot.docs.map(doc => ({
-      id: doc.id, 
-      ...doc.data() 
+      id: doc.id,
+      ...doc.data()
     }));
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
 };
 
-onMounted(fetchPosts);
-const headerTitle = ref("Loading...");
-const profileInfo = ref("Loading...");
-
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    router.push('/TrendingPage'); 
+    router.push('/TrendingPage');
   }
 };
 
-const fetchUsername = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "username"));
-    querySnapshot.forEach((doc) => {
-      headerTitle.value = doc.data().username;
-    });
-  } catch (error) {
-    console.error("Error fetching username:", error);
-    headerTitle.value = "Error loading username";
-  }
-};
-
-const fetchProfileInfo = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "profileInfo"));
-    querySnapshot.forEach((doc) => {
-      profileInfo.value = doc.data().info; 
-    });
-  } catch (error) {
-    console.error("Error fetching profile info:", error);
-    profileInfo.value = "Error loading profile info";
-  }
+const sharePage = () => {
+  alert("Share functionality coming soon!");
 };
 
 onMounted(() => {
-  fetchUsername();
-  fetchProfileInfo();
+  fetchUserData();
+  fetchPosts();
 });
 </script>
 
@@ -159,16 +172,19 @@ body {
  .image-container {
    display: flex;
    justify-content: center;  
-   padding-top: 20px;     
+   padding-top: 10px;     
    position: relative;  
  }
  
  .post {
-   width: 50%; 
-   height: 50%; 
-   border-radius: 50%; 
-   object-fit: cover; 
- }
+  width: 150px; 
+  height: 150px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
+
  
  .crown-icon-verify{
    position: absolute;
@@ -183,9 +199,8 @@ body {
  }
  
  h1 {
-       margin-top: 5%;
        font-size: 24px;
-       color: #C42D39;
+       color: #000000;
        margin-bottom: 15px;
        text-align: center;
        font-weight: 500;
@@ -195,7 +210,7 @@ body {
  
      p{
        font-size: 15px;
-       color: #F9B132;
+       color: #000000;
        margin-bottom: 25px;
        text-align: center;
        font-family: "Quicksand", serif;
@@ -227,8 +242,9 @@ body {
  
  .p-container p {
    margin: 0;
-   color: #ffffff;
+   color: #FC7388;
    font-size: 14px;
+font-weight: 600;
  }
  
  .p-container1 {
@@ -236,6 +252,7 @@ body {
   justify-content: center; 
   gap: 5px; 
   margin-right: 5%;
+  margin-bottom: 4%;
  }
 
  .p-container1 .numbers {
@@ -249,12 +266,12 @@ body {
  
  .p-container1 p {
    margin: 0;
-   color: #F9B132;
+   color: #000000;
    font-size: 14px;
  }
 
  .backgroundcolor{
-   background-color: #000000;
+  background-color: #FFE0CB;
    padding: 5%;
  }
  
@@ -315,6 +332,7 @@ body {
    height: 24px;
  }
 
+ /* Header*/
  .header {
    display: flex;
    align-items: center;
@@ -341,7 +359,6 @@ body {
    margin: 0;
    margin-left: 30px; 
    color: black;
-   text-transform: uppercase;
  }
  
  .header-icons {
@@ -362,6 +379,25 @@ body {
    border: none;
    cursor: pointer;
  }
+
+ #edit {
+  border-radius: 15px;
+  padding: 10px 20px;
+  background-color: #FC7388;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#edit:hover {
+  background-color: #d46172; 
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
 
  /*Navigation*/
  .fixed-bottom-box {
@@ -413,4 +449,4 @@ body {
 .add-button:hover {
   background-color: #643C2D;
 }
-    </style>
+</style>

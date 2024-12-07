@@ -194,7 +194,7 @@ body {
   text-align: center;
   margin: 0 auto;
   position: absolute;
-  top: 38%;
+  top: 36%;
   left: 47.5%;
   transform: translate(-50%, -43%);
 }
@@ -322,7 +322,7 @@ h2 {
 }
 .close-button {
   position: absolute;
-  top: -10px;
+  top: -15px;
   right: -25px;
   background: none;
   border: none;
