@@ -162,6 +162,7 @@ body {
    justify-content: center;  
    padding-top: 20px;     
    position: relative;  
+     padding-top: 60px;
  }
  
  .post {
@@ -266,6 +267,7 @@ body {
    gap: 10px;
    padding: 20px;
    overflow: hidden; 
+   margin-bottom: 20%;
 }
  
  .image img {
@@ -317,16 +319,16 @@ body {
    height: 24px;
  }
 
- /* Header*/
  .header {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   padding: 10px 16px;
-   background-color: #FCF7F2;
-   top: 0;
-   width: 100%;
-   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background-color: #FCF7F2;
  }
  
  .back-button {
@@ -365,7 +367,6 @@ body {
    cursor: pointer;
  }
 
- /*Navigation*/
  .fixed-bottom-box {
   position: fixed;
   padding-top: 3%;

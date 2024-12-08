@@ -128,27 +128,25 @@ export default {
     const showComments = ref(false);
     const commentInput = ref(null);
     const comments = ref([]);
-    const userName = ref('');  // Will store the username retrieved from the 'users' collection
-    const profileImage = ref('/public/img/icons/blankprofile.png'); // Default profile image
+    const userName = ref('');  
+    const profileImage = ref('/public/img/icons/blankprofile.png'); 
 
-    // Fetch the logged-in user details
     const fetchUserData = async () => {
       try {
         const user = auth.currentUser;
         if (!user) {
           alert("No user is signed in. Redirecting to login...");
-          this.$router.push('/');  // Redirect to login page if no user is logged in
+          this.$router.push('/');  
           return;
         }
 
-        // Fetch user details from 'users' collection based on logged-in user UID
         const userRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userRef);
         
         if (userSnapshot.exists()) {
           const userData = userSnapshot.data();
-          userName.value = userData.username || 'Anonymous';  // Default username if not available
-          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';  // Default profile image if not available
+          userName.value = userData.username || 'Anonymous';  
+          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';  
         } else {
           console.error('No user data found for the logged-in user.');
         }
@@ -158,7 +156,6 @@ export default {
       }
     };
 
-    // Fetch the post details from Firestore
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -167,12 +164,11 @@ export default {
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
 
-          // Fetch the user who posted the post
-          const userRef = doc(db, 'users', post.value.userId);  // Assuming post has a 'userId' field
+          const userRef = doc(db, 'users', post.value.userId);  
           const userSnapshot = await getDoc(userRef);
           if (userSnapshot.exists()) {
             const userData = userSnapshot.data();
-            userName.value = userData.username || 'Anonymous';  // Display the username of the person who posted
+            userName.value = userData.username || 'Anonymous';  
           } else {
             console.error('No user data found for the post author.');
           }
@@ -188,7 +184,6 @@ export default {
       }
     };
 
-    // Fetch the comments for the post
     const fetchComments = async () => {
       try {
         const commentsRef = collection(db, 'posts', postId, 'comments');
@@ -199,25 +194,23 @@ export default {
         querySnapshot.forEach(async (docSnapshot) => {
           const commentData = docSnapshot.data();
           
-          // Fetch user details for each comment's userId
           const userRef = doc(db, 'users', commentData.userId);
           const userSnapshot = await getDoc(userRef);
           if (userSnapshot.exists()) {
-            commentData.userName = userSnapshot.data().username || 'Anonymous';  // Add username to the comment
+            commentData.userName = userSnapshot.data().username || 'Anonymous';  
           } else {
-            commentData.userName = 'Anonymous'; // Default username if user data is not found
+            commentData.userName = 'Anonymous';
           }
           
-          fetchedComments.push(commentData);  // Add the comment data with the user's name
+          fetchedComments.push(commentData);  
         });
 
-        comments.value = fetchedComments; // Update the comments array
+        comments.value = fetchedComments; 
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
     };
 
-    // Add a new comment to the post
     const addComment = async () => {
       const commentText = commentInput.value.value.trim();
       if (commentText === '') return;
@@ -227,7 +220,7 @@ export default {
         await addDoc(commentsRef, {
           text: commentText,
           timestamp: new Date(),
-          userId: auth.currentUser.uid,  // Use the current logged-in user's ID
+          userId: auth.currentUser.uid,  
         });
         
         commentInput.value.value = '';
@@ -237,7 +230,6 @@ export default {
       }
     };
 
-    // Handle like/unlike post
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -262,7 +254,6 @@ export default {
       }
     };
 
-    // Go back to the previous page or TrendingPage
     const goBack = () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -271,7 +262,6 @@ export default {
       }
     };
 
-    // Toggle the visibility of the comments section
     const toggleCommentSection = () => {
       showComments.value = !showComments.value;
       if (showComments.value && commentInput.value) {
@@ -280,9 +270,9 @@ export default {
     };
 
     onMounted(() => {
-      fetchUserData();  // Fetch logged-in user data
-      fetchPost();      // Fetch the post details (and the user who posted)
-      fetchComments();  // Fetch comments if needed
+      fetchUserData();  
+      fetchPost();     
+      fetchComments();  
     });
 
     return {
@@ -292,8 +282,8 @@ export default {
       showComments,
       commentInput,
       comments,
-      userName, // Return userName so it can be displayed in the template
-      profileImage, // Return profileImage so it can be used in the template
+      userName, 
+      profileImage, 
       goBack,
       handleLike,
       toggleCommentSection,
@@ -321,6 +311,7 @@ body {
   top: 0;
   width: 100%;
   z-index: 10;
+  background-color: #FCF7F2;
 }
 
 .back-button {

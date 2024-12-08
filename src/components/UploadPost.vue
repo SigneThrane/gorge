@@ -88,7 +88,6 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import axios from "axios";
 
-// Form fields
 const uploadTitle = ref("Upload Post");
 const title = ref("");
 const description = ref("");

@@ -106,7 +106,6 @@ onMounted(fetchPosts);
 }
 </style>
 
-
 <style scoped>
 body {
   margin: 0;

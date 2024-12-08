@@ -10,7 +10,6 @@
 </div>
 <div class="backgroundcolor">
   <div class="image-container">
-      <!-- Dynamically display profile picture -->
       <img class="post" :src="profileImage" alt="Profile Image" />
     </div>
  <h1>{{ username }}</h1>
@@ -83,30 +82,28 @@
  <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { auth, db } from '../firebaseConfig'; // Assuming Firebase is set up correctly
+import { auth, db } from '../firebaseConfig'; 
 import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 const username = ref("Loading...");
 const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
-const profileImage = ref("/public/img/icons/blankprofile.png"); // Default profile image
+const profileImage = ref("/public/img/icons/blankprofile.png"); 
 const posts = ref([]);
-const postCount = ref(0); // This will hold the count of posts
+const postCount = ref(0); 
 
 const router = useRouter();
 
-// Fetch user data (e.g., username, age, etc.)
 const fetchUserData = async () => {
   try {
-    const user = auth.currentUser; // Get the current logged-in user
+    const user = auth.currentUser; 
     if (!user) {
       alert("No user is signed in. Redirecting to login...");
-      router.push('/'); // Redirect to login page if no user is signed in
+      router.push('/'); 
       return;
     }
 
-    // Fetch the user document using the logged-in user's UID
     const userDocRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userDocRef);
 
@@ -126,28 +123,24 @@ const fetchUserData = async () => {
   }
 };
 
-// Fetch posts for the current user and count them
 const fetchPosts = async () => {
   try {
-    const user = auth.currentUser; // Get the current logged-in user
+    const user = auth.currentUser; 
     if (!user) {
       alert("No user is signed in. Redirecting to login...");
-      router.push('/'); // Redirect to login if no user is signed in
+      router.push('/'); 
       return;
     }
 
-    // Query the posts collection where userId matches the logged-in user's UID
     const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.uid));
     const querySnapshot = await getDocs(postsQuery);
 
-    // Map over the query snapshot to get the post data
     posts.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
 
-    // Set the post count
-    postCount.value = posts.value.length; // Set the count of posts
+    postCount.value = posts.value.length; 
 
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -155,7 +148,6 @@ const fetchPosts = async () => {
   }
 };
 
-// Go back to the previous page or navigate to the trending page
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -164,12 +156,10 @@ const goBack = () => {
   }
 };
 
-// Placeholder function for share functionality
 const sharePage = () => {
   alert("Share functionality coming soon!");
 };
 
-// Fetch user data and posts when component is mounted
 onMounted(() => {
   fetchUserData();
   fetchPosts();
@@ -191,12 +181,12 @@ body {
   overflow-x: hidden;
 }
 
- /*Profile info*/
  .image-container {
    display: flex;
    justify-content: center;  
    padding-top: 10px;     
    position: relative;  
+   margin-top: 9%;
  }
  
  .post {
@@ -304,6 +294,7 @@ font-weight: 600;
    gap: 10px;
    padding: 20px; 
    overflow: hidden; 
+   margin-bottom: 20%;
 }
  
  .image img {
@@ -355,16 +346,16 @@ font-weight: 600;
    height: 24px;
  }
 
- /* Header*/
  .header {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   padding: 10px 16px;
-   background-color: #FCF7F2;
-   top: 0;
-   width: 100%;
-   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background-color: #FCF7F2;
  }
  
  .back-button {
@@ -422,7 +413,6 @@ font-weight: 600;
   align-items: center;  
 }
 
- /*Navigation*/
  .fixed-bottom-box {
   position: fixed;
   padding-top: 3%;

@@ -8,10 +8,8 @@
   <div class="image-container">
     <img :src="profileImage" alt="Profile Image" />
     
-    <!-- Hidden file input -->
     <input type="file" id="file-input" @change="uploadImage" />
     
-    <!-- Custom styled button -->
     <label for="file-input" class="custom-file-button">
       Ændre profilbillede
     </label>
@@ -97,7 +95,6 @@ import { auth, db } from '../firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import axios from 'axios';
 
-// Form fields
 const username = ref('');
 const fullName = ref('');
 const age = ref('');
@@ -105,37 +102,35 @@ const city = ref('');
 const aesthetic = ref('');
 const profileImage = ref('/public/img/icons/blankprofile.png');
 const about = ref('About Me');
-const selectedImage = ref(null); // To store the selected image
-const isUploading = ref(false); // To handle the upload state
+const selectedImage = ref(null); 
+const isUploading = ref(false); 
 const router = useRouter();
 
-// Cloudinary upload function (from your provided script)
 const uploadImageToCloudinary = async (image) => {
   const formData = new FormData();
   formData.append('file', image);
-  formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
-  formData.append('cloud_name', 'dfyymggsw'); // Cloudinary cloud name
+  formData.append('upload_preset', 'ml_default'); 
+  formData.append('cloud_name', 'dfyymggsw'); 
 
   try {
     const response = await axios.post('https://api.cloudinary.com/v1_1/dfyymggsw/image/upload', formData);
     console.log('Cloudinary Response:', response.data);
-    return response.data.secure_url; // Return the secure URL of the uploaded image
+    return response.data.secure_url; 
   } catch (error) {
     console.error('Error uploading image:', error.response || error);
     throw new Error('Failed to upload image to Cloudinary');
   }
 };
 
-// Upload Image Handler
 const uploadImage = async (event) => {
   const file = event.target.files[0];
   if (file) {
-    selectedImage.value = file; // Save the selected image
+    selectedImage.value = file; 
     console.log('Image selected:', selectedImage.value);
 
     try {
       const imageUrl = await uploadImageToCloudinary(selectedImage.value);
-      profileImage.value = imageUrl; // Update the profile image URL
+      profileImage.value = imageUrl;
       console.log('Profile image uploaded to Cloudinary:', imageUrl);
     } catch (error) {
       console.error('Error uploading profile image:', error);
@@ -143,7 +138,6 @@ const uploadImage = async (event) => {
   }
 };
 
-// Save Profile Information
 const saveProfile = async () => {
   const user = auth.currentUser;
   if (user) {
@@ -156,7 +150,7 @@ const saveProfile = async () => {
         age: age.value,
         city: city.value,
         aesthetic: aesthetic.value,
-        profileImage: profileImage.value, // Save the Cloudinary image URL
+        profileImage: profileImage.value, 
       },
       { merge: true }
     );
@@ -166,7 +160,6 @@ const saveProfile = async () => {
   }
 };
 
-// Go Back Function (Navigate to the previous page)
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -184,7 +177,6 @@ const goBack = () => {
     padding-top: 60px;
   }
 
-  /* Header */
   .header {
    display: flex;
    align-items: center;
@@ -225,7 +217,6 @@ const goBack = () => {
    margin-top: 2%;
  }
 
-  /* Nav */
   .fixed-bottom-box {
     position: fixed;
     height: 70px;
@@ -275,7 +266,6 @@ const goBack = () => {
     background-color: #643C2D;
   }
 
-  /* Profile Image */
   .image-container {
     display: flex;
     flex-direction: column;
@@ -421,5 +411,4 @@ input[type="file"] {
   outline: none;
   box-shadow: 0 0 3px rgba(184, 107, 77, 0.6);
 }
-
 </style>
