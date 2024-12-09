@@ -67,26 +67,51 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { db } from '../firebaseConfig.js'; 
-import { collection, getDocs } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig.js'; 
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const posts = ref([]); 
-
+const currentUser = ref(null); // To store the currently logged-in user
 
 const fetchPosts = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, 'posts'));
-    posts.value = querySnapshot.docs.map(doc => ({
-      id: doc.id, 
-      ...doc.data() 
-    }));
+    if (currentUser.value) {
+      // Fetch the list of users the current user is following
+      const followingSnapshot = await getDocs(collection(db, 'Followers', currentUser.value.uid, 'following'));
+      const followingUids = followingSnapshot.docs.map(doc => doc.id);
+      // Add the current user's UID to the list of followed users
+      followingUids.push(currentUser.value.uid);
+
+      // Query the posts collection for posts by the current user and the users they are following
+      const postsQuery = query(
+        collection(db, 'posts'),
+        where('userId', 'in', followingUids) // Filter posts by the userId being in the following list
+      );
+      const querySnapshot = await getDocs(postsQuery);
+      posts.value = querySnapshot.docs.map(doc => ({
+        id: doc.id, 
+        ...doc.data() 
+      }));
+    }
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
 };
 
+const getCurrentUser = () => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser.value = user;
+      fetchPosts(); // Fetch posts once the user is authenticated
+    } else {
+      currentUser.value = null; // Set to null if no user is logged in
+      posts.value = []; // Optionally clear posts when not logged in
+    }
+  });
+};
 
-onMounted(fetchPosts);
+onMounted(getCurrentUser);
 </script>
 
 <style scoped>
