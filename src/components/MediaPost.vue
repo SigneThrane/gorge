@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <button class="back-button" @click="goBack"><</button>
-<router-link to="/ProfileMedia" class="no-underline">
+    <router-link v-if="userId" :to="`/ProfileMedia/${userId}`" class="no-underline">
   <h1 class="header-title" v-if="userName">{{ userName }}</h1>
   <h1 class="header-title" v-else>Loading user...</h1>
 </router-link>
@@ -52,7 +52,7 @@
   <div v-if="showComments" class="comment-section">
   <div class="input-row">
     <img class="post" :src="profileImage" alt="Profile Image" />
-    <input class="comment-input" type="text" placeholder="Skriv kommentar" ref="commentInput" @keyup.enter="addComment">
+    <input class="comment-input" type="text" placeholder="Write comment" ref="commentInput" @keyup.enter="addComment">
   </div>
 
   <div v-if="comments && comments.length > 0" class="comments-list">
@@ -66,7 +66,7 @@
 
 <div v-if="post" class="info">
   <h3>{{ post.title }}</h3>
-  <p>Beskrivelse: {{ post.description }}</p>
+  <p>Description: {{ post.description }}</p>
   <p>Tags: {{ post.tag }} </p>
   <p>Link: {{ post.link}} </p>
 </div>
@@ -129,8 +129,9 @@ export default {
     const showComments = ref(false);
     const commentInput = ref(null);
     const comments = ref([]);
-    const userName = ref('');  
-    const profileImage = ref('/public/img/icons/blankprofile.png'); 
+    const userName = ref('');
+    const profileImage = ref('/public/img/icons/blankprofile.png');
+    const userId = ref(''); 
 
     const fetchUserData = async () => {
       try {
@@ -164,8 +165,13 @@ export default {
 
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
+          if (post.value && post.value.userId) {
+            userId.value = post.value.userId;  
+          } else {
+            console.error('Post does not have userId or post is invalid.');
+          }
 
-          const userRef = doc(db, 'users', post.value.userId);  
+          const userRef = doc(db, 'users', userId.value);
           const userSnapshot = await getDoc(userRef);
           if (userSnapshot.exists()) {
             const userData = userSnapshot.data();
@@ -231,6 +237,7 @@ export default {
       }
     };
 
+    // Handle like/unlike functionality
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -285,6 +292,7 @@ export default {
       comments,
       userName, 
       profileImage, 
+      userId,  
       goBack,
       handleLike,
       toggleCommentSection,
@@ -293,6 +301,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 body {

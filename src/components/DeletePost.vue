@@ -82,7 +82,7 @@
   
   <div v-if="post" class="info">
     <h3>{{ post.title }}</h3>
-    <p>Beskrivelse: {{ post.description }}</p>
+    <p>Description: {{ post.description }}</p>
     <p>Tags: {{ post.tag }} </p>
     <p>Link: {{ post.link}} </p>
   </div>

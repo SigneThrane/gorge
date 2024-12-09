@@ -2,23 +2,23 @@
   <body>
     <div class="login-container">
       <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
-      <h2>LOG IND</h2>
+      <h2>LOG IN</h2>
 
       <p>E-mail</p>
       <input type="text" v-model="email" class="input-field" placeholder="" />
 
-      <p>Adgangskode</p>
+      <p>Password</p>
       <input type="password" v-model="password" class="input-field" placeholder="" />
 
       <p class="register-link">
-        Har du ikke en bruger? 
-        <router-link to="/CreateAccount">Opret her.</router-link>
+        Don't have an account?
+        <router-link to="/CreateAccount">Create one here.</router-link>
       </p>
       
-      <button class="login-button" @click="login">LOG IND</button>
+      <button class="login-button" @click="login">LOG IN</button>
 
       <p class="register-link">
-        Har du glemt din adgangskode? <a href="#">Klik her.</a>
+        Forgot your password? <a href="#">Click here.</a>
       </p>
     </div>
   </body>

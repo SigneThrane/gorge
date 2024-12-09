@@ -42,9 +42,9 @@ export default createRouter({
       component: FollowingPage
     },
     {
-      path: '/ProfileMedia',
+      path: '/ProfileMedia/:uid',  
       name: 'ProfileMedia',
-      component: ProfileMedia
+      component: ProfileMedia,
     },
     {
       path: '/ProfileSetting',

@@ -1,7 +1,7 @@
 <template>
    <div class="header">
     <button class="back-button" @click="goBack"><</button>
-      <h1 class="header-title">Min profil</h1> 
+      <h1 class="header-title">My profile</h1> 
   <div class="header-icons">
     <button class="icon-button" onclick="sharePage()">  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
   <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
@@ -17,8 +17,8 @@
  
  <div class="p-container">
 <p class="numbers1">{{ postCount }}</p>  
-       <p class="numbers2">10.9 K</p>
-       <p class="numbers3">412</p>
+<p class="numbers2">{{ followersCount }}</p>
+<p class="numbers3">{{ followingCount }}</p>
      </div>
 
      <div class="p-container1">
@@ -29,7 +29,7 @@
  
      <div class="button-container">
       <router-link to="/ProfileSetting">
-     <button id="edit">Redigere profil</button>
+     <button id="edit">Edit profile</button>
     </router-link>
      </div>
    </div>
@@ -78,8 +78,8 @@
     </div>
   </div>
     </template>
- 
- <script setup>
+
+<script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { auth, db } from '../firebaseConfig'; 
@@ -90,58 +90,83 @@ const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
 const profileImage = ref("/public/img/icons/blankprofile.png"); 
-const posts = ref([]);
+const posts = ref([]); 
 const postCount = ref(0); 
+const followersCount = ref(0); 
+const followingCount = ref(0); 
 
 const router = useRouter();
 
+// Fetch user data function
 const fetchUserData = async () => {
   try {
-    const user = auth.currentUser; 
+    const user = auth.currentUser;
     if (!user) {
       alert("No user is signed in. Redirecting to login...");
-      router.push('/'); 
+      router.push('/');
       return;
     }
 
+    // Reference to the user document in Firestore
     const userDocRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userDocRef);
 
     if (userDoc.exists()) {
       const userData = userDoc.data();
+      console.log(userData);  // Log the entire userData to check structure
+
       username.value = userData.username || "Anonymous";
       age.value = userData.age || "N/A";
       city.value = userData.city || "Unknown";
       aesthetic.value = userData.aesthetic || "Not specified";
       profileImage.value = userData.profileImage || "/public/img/icons/blankprofile.png";
+      
+      // Fetch followers and following counts using subcollections
+      fetchFollowersAndFollowing(user.uid);
     } else {
-      alert("No user data found for the logged-in user.");
+      console.error("No user data found for the logged-in user.");
+      alert("No user data found.");
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
-    alert("An error occurred while fetching your profile information.");
+    alert("An error occurred while fetching user data.");
   }
 };
 
+// Fetch followers and following counts from subcollections
+const fetchFollowersAndFollowing = async (userId) => {
+  try {
+    // Reference to the followers and following subcollections
+    const followersRef = collection(db, "users", userId, "followers");
+    const followingRef = collection(db, "users", userId, "following");
+
+    // Get the snapshot of the followers and following subcollections
+    const followersSnapshot = await getDocs(followersRef);
+    const followingSnapshot = await getDocs(followingRef);
+
+    // Set the count of followers and following
+    followersCount.value = followersSnapshot.size;  // Number of documents in the followers subcollection
+    followingCount.value = followingSnapshot.size;  // Number of documents in the following subcollection
+  } catch (error) {
+    console.error("Error fetching followers or following:", error);
+    alert("An error occurred while fetching followers/following data.");
+  }
+};
+
+// Fetch posts function
 const fetchPosts = async () => {
   try {
     const user = auth.currentUser; 
     if (!user) {
-      alert("No user is signed in. Redirecting to login...");
-      router.push('/'); 
+      console.error("No user is signed in.");
       return;
     }
-
+    
     const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.uid));
     const querySnapshot = await getDocs(postsQuery);
 
-    posts.value = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    postCount.value = posts.value.length; 
-
+    posts.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    postCount.value = posts.value.length;
   } catch (error) {
     console.error('Error fetching posts:', error);
     alert("An error occurred while fetching posts.");
@@ -156,17 +181,15 @@ const goBack = () => {
   }
 };
 
-const sharePage = () => {
-  alert("Share functionality coming soon!");
-};
-
+// Fetch user data and posts on mounted
 onMounted(() => {
   fetchUserData();
   fetchPosts();
 });
 </script>
 
-       
+
+   
 <style scoped>
 *,
 *::before,
@@ -239,17 +262,17 @@ body {
 
 .numbers1 {
   position: relative;
-  right: 41px; 
+  right: 62px; 
 }
 
 .numbers2 {
   position: relative;
-  left: 3px;  
+  left: 1px;  
 }
 
 .numbers3 {
   position: relative;
-  left: 45px; 
+  left: 60px; 
 }
 
  

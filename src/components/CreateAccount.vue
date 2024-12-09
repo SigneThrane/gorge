@@ -2,19 +2,19 @@
   <body>
     <div class="login-container">
       <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
-      <h2>OPRET PROFIL</h2>
+      <h2>CREATE PROFILE</h2>
   
-      <p>For- og efternavn</p>
+      <p>First and last name</p>
       <input type="text" v-model="fullName" class="input-field" />
-      <p>Brugernavn</p>
+      <p>Usename</p>
       <input type="text" v-model="username" class="input-field" />
-      <p>Adgangskode</p>
+      <p>Password</p>
       <input type="password" v-model="password" class="input-field" />
       <p>E-Mail</p>
       <input type="email" v-model="email" class="input-field" />
       
       <router-link to="/CreateAbout" class="next-link">
-        <button class="login-button" @click="createAccount">NÆSTE</button>
+        <button class="login-button" @click="createAccount">NEXT</button>
       </router-link>
     </div>
   </body>

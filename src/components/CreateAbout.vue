@@ -2,13 +2,13 @@
   <body>
     <div class="login-container">
       <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
-      <h2>Inden oprettelse skal vi lige bruge et par informationer om dig, til din side...</h2>
+      <h2>Before creating your account, we just need a few details about you for your page...</h2>
   
-      <p>Alder</p>
+      <p>Age</p>
       <input type="text" v-model="age" class="input-field" />
-      <p>By</p>
+      <p>City/country</p>
       <input type="text" v-model="city" class="input-field" />
-      <p>Æstetik</p>
+      <p>Aesthetics</p>
       <input type="text" v-model="aesthetic" class="input-field" />
     
       <button class="login-button" @click="saveProfileInfo">OPRET</button>

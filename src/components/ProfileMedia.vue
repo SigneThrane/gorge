@@ -1,43 +1,48 @@
 <template>
-   <div class="header">
+  <div class="header">
     <button class="back-button" @click="goBack"><</button>
-      <h1 class="header-title">Freja Petersen</h1> 
-  <div class="header-icons">
-    <router-link to="/Notification">
-      <button class="icon-button" onclick="showNotifications()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" class="bi bi-bell" viewBox="0 0 16 16">
-  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
-</svg></button>
+    <h1 class="header-title">{{ username }}</h1> 
+    <div class="header-icons">
+      <router-link to="/Notification">
+        <button class="icon-button" @click="showNotifications">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" class="bi bi-bell" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+          </svg>
+        </button>
       </router-link>
-    <button class="icon-button" onclick="sharePage()">  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-</svg></button>
+      <button class="icon-button" @click="sharePage">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+          <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
+        </svg>
+      </button>
+    </div>
   </div>
-</div>
-<div class="backgroundcolor">
-   <div class="image-container">
-   <img class="post" src="/public/img/icons/placeholder2.png" alt="Centered Image" />
- 
-   <img src="/public/img/icons/crown.png" alt="Crown Icon" class="crown-icon-verify" />
- </div>
- <h1>Freja Petersen</h1>
- <p>21 years, Århus, preppy street style</p>
- <div class="p-container">
-       <p class="numbers1">1K</p>
-       <p class="numbers2">10.9 K</p>
-       <p class="numbers3">412</p>
-     </div>
-     <div class="p-container1">
+  
+  <div class="backgroundcolor">
+    <div class="image-container">
+      <img :src="profileImage || '/public/img/icons/blankprofile.png'" alt="Profile Picture" class="post" />
+      <img src="/public/img/icons/crown.png" alt="Crown Icon" class="crown-icon-verify" />
+    </div>
+    <h1>{{ username }}</h1>
+    <p>{{ age }} years, {{ city }}, {{ aesthetic }}</p>
+    <div class="p-container">
+      <p class="numbers1">{{ postCount }}</p>  
+      <p class="numbers2">{{ followersCount }}</p>
+      <p class="numbers3">{{ followingCount }}</p>
+    </div>
+    <div class="p-container1">
       <p class="numbers">Posts</p>
       <p class="numbers">Followers</p>
       <p class="numbers">Following</p>
-     </div>
+    </div>
+    <div class="button-container">
+  <button id="edit" @click="toggleFollow">
+    {{ isFollowing ? 'Following' : 'Follow' }}
+  </button>
+</div>
+  </div>
 
-     <div class="button-container">
-     <button id="edit">Følg</button>
-     </div>
-   </div>
-   
-   <div class="image-grid">
+  <div class="image-grid">
     <div class="image" v-for="post in posts" :key="post.id">
       <router-link :to="`/MediaPost/${post.id}`">
         <img :src="post.imageUrl" :alt="post.title" />
@@ -83,65 +88,149 @@
    </template>
    
    <script setup>
-    import { ref, onMounted } from 'vue';
-    import { db } from '../firebaseConfig.js'; 
-    import { collection, getDocs } from 'firebase/firestore';
-    
-    const headerTitle = ref("Loading..."); 
-    const profileInfo = ref("Loading..."); 
-    const goBack = () => {
+   import { ref, onMounted } from 'vue';
+   import { useRoute, useRouter } from 'vue-router'; 
+   import { db, storage, auth } from '../firebaseConfig.js';
+   import { doc, getDoc, query, collection, where, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+   import { onAuthStateChanged } from 'firebase/auth';
+   import { getDownloadURL, ref as storageRef } from 'firebase/storage';
+   
+   // Reactive variables
+   const username = ref('Loading...');
+   const age = ref('Loading...');
+   const city = ref('Loading...');
+   const aesthetic = ref('Loading...');
+   const profileImage = ref('');
+   const postCount = ref(0);
+   const posts = ref([]);
+   const currentUserId = ref(null);
+   const isFollowing = ref(false);
+   const followersCount = ref(0); // New reactive variable for followers count
+   const followingCount = ref(0); // New reactive variable for following count
+   
+   const route = useRoute();
+   const router = useRouter();
+   const uid = route.params.uid; 
+   
+   // Get the current user's ID
+   onAuthStateChanged(auth, (user) => {
+     if (user) {
+       currentUserId.value = user.uid;
+       checkIfFollowing();
+       fetchFollowingCount();
+     } else {
+       currentUserId.value = null;
+     }
+   });
+   
+   const fetchProfileInfo = async () => {
+     try {
+       const userDocRef = doc(db, 'users', uid);
+       const userDoc = await getDoc(userDocRef);
+   
+       if (userDoc.exists()) {
+         const userData = userDoc.data();
+         username.value = userData.username;
+         age.value = userData.age;
+         city.value = userData.city;
+         aesthetic.value = userData.aesthetic;
+         profileImage.value = userData.profileImage.startsWith('https://') 
+           ? userData.profileImage 
+           : await getDownloadURL(storageRef(storage, userData.profileImage));
+       } else {
+         console.error("User not found");
+       }
+     } catch (error) {
+       console.error('Error fetching user profile:', error);
+     }
+   };
+   
+   const fetchPostsForUser = async () => {
+     try {
+       const postsQuery = query(collection(db, 'posts'), where('userId', '==', uid)); 
+       const querySnapshot = await getDocs(postsQuery);
+       
+       posts.value = querySnapshot.docs.map(doc => ({
+         id: doc.id,
+         ...doc.data(),
+       }));
+   
+       postCount.value = posts.value.length;
+     } catch (error) {
+       console.error('Error fetching posts:', error);
+     }
+   };
+   
+   const checkIfFollowing = async () => {
+     if (!currentUserId.value || !uid) return;
+   
+     try {
+       const followDocRef = doc(db, `users/${uid}/followers/${currentUserId.value}`);
+       const docSnapshot = await getDoc(followDocRef);
+       isFollowing.value = docSnapshot.exists();
+     } catch (error) {
+       console.error('Error checking follow status:', error);
+     }
+   };
+   
+   const toggleFollow = async () => {
+     if (!currentUserId.value || !uid) return;
+   
+     try {
+       const followDocRef = doc(db, `users/${uid}/followers/${currentUserId.value}`);
+       if (isFollowing.value) {
+         await deleteDoc(followDocRef);
+         followersCount.value -= 1; // Decrement followers
+       } else {
+         await setDoc(followDocRef, { followedAt: new Date() });
+         followersCount.value += 1; // Increment followers
+       }
+       isFollowing.value = !isFollowing.value;
+     } catch (error) {
+       console.error('Error toggling follow status:', error);
+     }
+   };
+   
+   // Fetch the number of followers for the user
+   const fetchFollowersCount = async () => {
+     try {
+       const followersQuery = query(collection(db, `users/${uid}/followers`));
+       const querySnapshot = await getDocs(followersQuery);
+       followersCount.value = querySnapshot.size; // Update the count
+     } catch (error) {
+       console.error('Error fetching followers count:', error);
+     }
+   };
+   
+   // Fetch the number of users this person is following
+   const fetchFollowingCount = async () => {
+     try {
+       if (!currentUserId.value) return;
+   
+       const followingQuery = query(collection(db, `users/${currentUserId.value}/following`));
+       const querySnapshot = await getDocs(followingQuery);
+       followingCount.value = querySnapshot.size; // Update the count
+     } catch (error) {
+       console.error('Error fetching following count:', error);
+     }
+   };
+
+   const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    router.push('/TrendingPage'); 
+    router.push('/TrendingPage');
   }
 };
-const posts = ref([]); 
-
-const fetchPosts = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'posts'));
-    posts.value = querySnapshot.docs.map(doc => ({
-      id: doc.id, 
-      ...doc.data() 
-    }));
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-  }
-};
-
-onMounted(fetchPosts);
-    
-    const fetchUsername = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "username"));
-        querySnapshot.forEach((doc) => {
-          headerTitle.value = doc.data().username1;
-        });
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        headerTitle.value = "Error loading username";
-      }
-    };
-    
-    const fetchProfileInfo = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "profileInfo"));
-        querySnapshot.forEach((doc) => {
-          profileInfo.value = doc.data().info2; 
-        });
-      } catch (error) {
-        console.error("Error fetching profile info:", error);
-        profileInfo.value = "Error loading profile info";
-      }
-    };
-    
-    onMounted(() => {
-      fetchUsername();       
-      fetchProfileInfo();    
-    });
-    </script>
- 
+   
+   onMounted(() => {
+     fetchProfileInfo();
+     fetchPostsForUser();
+     fetchFollowersCount(); // Call this function on mount
+   });
+   </script>
+   
+   
    
  <style scoped>
 *,
@@ -166,11 +255,13 @@ body {
  }
  
  .post {
-   width: 50%; 
-   height: 50%; 
-   border-radius: 50%; 
-   object-fit: cover; 
- }
+  width: 150px; 
+  height: 150px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
  
  .crown-icon-verify{
    position: absolute;
@@ -184,24 +275,24 @@ body {
    opacity: 0.8;  
  }
 
- h1 {
-       margin-top: 5%;
-       font-size: 24px;
-       color: #000000;
-       margin-bottom: 15px;
-       text-align: center;
-       font-weight: 500;
-       font-family: "Quicksand", serif;
-       text-transform: uppercase;
-     }
+h1 {
+  margin-top: 5%;
+  font-size: 24px;
+  color: #000000;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 500;
+  font-family: "Quicksand", serif;
+  text-transform: uppercase;
+}
  
-     p{
-       font-size: 15px;
-       color: #000000;
-       margin-bottom: 25px;
-       text-align: center;
-       font-family: "Quicksand", serif;
-     }
+p{
+ font-size: 15px;
+ color: #000000;
+ margin-bottom: 25px;
+ text-align: center;
+ font-family: "Quicksand", serif;
+}
  
   .p-container {
   display: flex;
@@ -213,20 +304,19 @@ body {
 
 .numbers1 {
   position: relative;
-  right: 41px; 
+  right: 62px; 
 }
 
 .numbers2 {
   position: relative;
-  left: 3px;  
+  left: 1px;  
 }
 
 .numbers3 {
   position: relative;
-  left: 45px; 
+  left: 60px; 
 }
 
- 
  .p-container p {
    margin: 0;
    color: #FC7388;

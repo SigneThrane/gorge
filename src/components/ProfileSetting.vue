@@ -1,7 +1,7 @@
 <template>
  <div class="header">
     <button class="back-button" @click="goBack"><</button>
-    <h1 class="header-title">Redigere profil</h1> 
+    <h1 class="header-title">Edit profile</h1> 
   </div>
 
   <div class="profile-picture">
@@ -11,7 +11,7 @@
     <input type="file" id="file-input" @change="uploadImage" />
     
     <label for="file-input" class="custom-file-button">
-      Ændre profilbillede
+      Change profile picture
     </label>
   </div>
 
@@ -22,32 +22,32 @@
     </div>
 
     <div class="user-info">
-      <p>Fulde navn</p>
+      <p>Full name</p>
       <input v-model="fullName" class="custom-input" />
     </div>
 
     <div class="user-info">
-      <p>Brugernavn</p>
+      <p>Username</p>
       <input v-model="username" class="custom-input" />
     </div>
 
     <div class="user-info">
-      <p>Alder</p>
+      <p>Age</p>
       <input v-model="age" class="custom-input" />
     </div>
 
     <div class="user-info">
-      <p>By</p>
+      <p>City/country</p>
       <input v-model="city" class="custom-input" />
     </div>
 
     <div class="user-info">
-      <p>Æstetik</p>
+      <p>Aesthetics</p>
       <input v-model="aesthetic" class="custom-input" />
     </div>
 
     <div  class="save-button-container">
-      <button id="save" @click="saveProfile">Gem profil</button>
+      <button id="save" @click="saveProfile">Save profile</button>
     </div>
 
   </div>
@@ -213,7 +213,7 @@ const goBack = () => {
    font-size: 18px;
    margin: 0;
    color: black;
-   margin-right: 19%;
+   margin-right: 26%;
    margin-top: 2%;
  }
 
