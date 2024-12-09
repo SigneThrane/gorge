@@ -36,7 +36,7 @@
    
    <div class="image-grid">
   <div class="image" v-for="post in posts" :key="post.id">
-    <router-link :to="`/MediaPost/${post.id}`">
+    <router-link :to="`/DeletePost/${post.id}`">
       <img :src="post.imageUrl" :alt="post.title" />
     </router-link>
   </div>

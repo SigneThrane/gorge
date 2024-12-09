@@ -1,10 +1,11 @@
 <template>
   <div class="header">
     <button class="back-button" @click="goBack"><</button>
-    <router-link to="/ProfileMedia" class="no-underline">
-      <h1 class="header-title" v-if="userName">{{ userName }}</h1>
-      <h1 class="header-title" v-else>Loading user...</h1>
-    </router-link>
+<router-link to="/ProfileMedia" class="no-underline">
+  <h1 class="header-title" v-if="userName">{{ userName }}</h1>
+  <h1 class="header-title" v-else>Loading user...</h1>
+</router-link>
+
     <div class="header-icons">
       <router-link to="/Notification">
         <button class="icon-button" onclick="showNotifications()">
@@ -292,7 +293,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 body {

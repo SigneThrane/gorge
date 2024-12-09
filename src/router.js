@@ -11,8 +11,7 @@ import UploadPost from './components/UploadPost.vue'
 import MyProfile from './components/MyProfile.vue'
 import Notification from './components/Notification.vue'
 import Search from './components/Search.vue'
-
-
+import DeletePost from './components/DeletePost.vue'
 
 export default createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +75,11 @@ export default createRouter({
       path: '/Search',
       name: 'Search',
       component: Search
+    },
+    {
+      path: '/DeletePost/:id',
+      name: 'DeletePost',
+      component: DeletePost
     },
 
   ]
