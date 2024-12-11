@@ -52,7 +52,18 @@
     </button>
   </div>
 
-  <div v-if="showComments" class="comment-section">
+<div v-if="post" class="info">
+  <h3>{{ post.title }}</h3>
+  <p>Description: {{ post.description }}</p>
+  <p>Tags: {{ post.tag }} </p>
+  <p>Link: {{ post.link}} </p>
+</div>
+
+<div v-else class="loading">
+  <p>Loading...</p>
+</div>
+
+<div v-if="showComments" class="comment-section">
   <div class="input-row">
     <img class="post" :src="profileImage" alt="Profile Image" />
     <input class="comment-input" type="text" placeholder="Write comment" ref="commentInput" @keyup.enter="addComment">
@@ -65,17 +76,6 @@
   </div>
 </div>
   <p v-else>No comments yet.</p>
-</div>
-
-<div v-if="post" class="info">
-  <h3>{{ post.title }}</h3>
-  <p>Description: {{ post.description }}</p>
-  <p>Tags: {{ post.tag }} </p>
-  <p>Link: {{ post.link}} </p>
-</div>
-
-<div v-else class="loading">
-  <p>Loading...</p>
 </div>
 
   <div class="fixed-bottom-box">
@@ -311,8 +311,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 body {
   margin: 0;
@@ -377,6 +375,8 @@ font-weight: 500;
   object-fit: cover; 
   margin: 10px;  
   border-radius: 15px;
+  background: #fcf7f2; 
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -396,7 +396,7 @@ h1 {
   padding-left: 9%;
   padding-right: 9%;
   font-family: "Quicksand", serif;
-  margin-top: 7%;
+  margin-top: 2%;
 }
 
 .info p {

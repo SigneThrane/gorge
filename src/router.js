@@ -32,7 +32,7 @@ export default createRouter({
       component: CreateAbout
     },
     {
-      path: '/MediaPost/:id',  // Add dynamic segment to capture the post ID
+      path: '/MediaPost/:id', 
       name: 'MediaPost',
       component: MediaPost
     },
