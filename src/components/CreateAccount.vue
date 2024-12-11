@@ -6,38 +6,46 @@
   
       <p>First and last name</p>
       <input type="text" v-model="fullName" class="input-field" />
-      <p>Usename</p>
+
+      <p>Username</p>
       <input type="text" v-model="username" class="input-field" />
+
       <p>Password</p>
       <input type="password" v-model="password" class="input-field" />
+
       <p>E-Mail</p>
       <input type="email" v-model="email" class="input-field" />
       
-      <router-link to="/CreateAbout" class="next-link">
-        <button class="login-button" @click="createAccount">NEXT</button>
-      </router-link>
+      <button class="login-button" @click="createAccount">NEXT</button>
     </div>
   </body>
 </template>
-
 <script setup>
 import { ref } from "vue";
 import { auth, db } from "../firebaseConfig.js"; 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
+import { useRouter } from "vue-router";
 
 const fullName = ref("");
 const username = ref("");
 const email = ref("");
 const password = ref("");
+const router = useRouter(); // Using router for manual navigation
 
 const createAccount = async () => {
-  try {
+  // Validate password length before proceeding
+  if (password.value.length < 6) {
+    alert("Your password must be at least 6 characters long.");
+    return; // Prevent account creation if password is too short
+  }
 
+  try {
+    // Create user with email and password
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
     const user = userCredential.user;
 
-
+    // Save user data to Firestore
     const userDocRef = doc(db, "users", user.uid); 
     await setDoc(userDocRef, {
       fullName: fullName.value,
@@ -47,6 +55,10 @@ const createAccount = async () => {
     });
 
     alert("Account created successfully!");
+
+    // Navigate to the next page after successful account creation
+    router.push("/CreateAbout"); // This will push the user to the next page
+    
   } catch (error) {
     console.error("Error creating account:", error);
     alert("An error occurred while creating your account.");
