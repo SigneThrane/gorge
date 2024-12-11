@@ -274,7 +274,6 @@ body {
   position: relative;
   left: 60px; 
 }
-
  
  .p-container p {
    margin: 0;

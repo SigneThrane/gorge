@@ -21,7 +21,15 @@
     <div v-if="searchResults.length > 0">
       <h3>Results</h3>
       <div v-for="result in searchResults" :key="result.id" class="search-result-item">
-        <p>{{ result.name || result.tag }}</p> 
+
+        <router-link v-if="result.type === 'user'" :to="`/ProfileMedia/${result.id}`">
+          <p>{{ result.name }}</p> 
+        </router-link>
+
+        <router-link v-if="result.type === 'users'" :to="`/ProfileMedia/${result.id}`">
+  <p id="results">{{ result.name }}</p>
+</router-link>
+
       </div>
     </div>
 
@@ -80,7 +88,7 @@
    <script setup>
    import { ref, onMounted } from 'vue';
    import { useRouter } from 'vue-router';
-   import { db } from '../firebaseConfig.js';
+   import { db } from '../firebaseConfig.js'; 
    import { collection, query, where, getDocs } from 'firebase/firestore';
    
    const searchQuery = ref('');
@@ -88,6 +96,7 @@
    const searchResults = ref([]);
    const router = useRouter();
    
+
    onMounted(() => {
      const savedHistory = localStorage.getItem('searchHistory');
      if (savedHistory) {
@@ -105,24 +114,20 @@
        searchResults.value.length = 0; 
    
        const userQuery = query(
-         collection(db, 'username'),
-         where('username', '>=', searchQuery.value),
-         where('username', '<=', searchQuery.value + '\uf8ff')
+         collection(db, 'users'),  
+         where('username', '>=', searchQuery.value), 
+         where('username', '<=', searchQuery.value + '\uf8ff') 
        );
+   
        const userQuerySnapshot = await getDocs(userQuery);
        userQuerySnapshot.forEach(doc => {
-         searchResults.value.push({ id: doc.id, name: doc.data().username, type: 'user' }); 
+         searchResults.value.push({
+           id: doc.data().uid,  
+           name: doc.data().username,  
+           type: 'users'  
+         });
        });
    
-       const tagQuery = query(
-         collection(db, 'tag'),
-         where('tag', '>=', searchQuery.value),
-         where('tag', '<=', searchQuery.value + '\uf8ff')
-       );
-       const tagQuerySnapshot = await getDocs(tagQuery);
-       tagQuerySnapshot.forEach(doc => {
-         searchResults.value.push({ id: doc.id, tag: doc.data().tag, type: 'tag' }); 
-       });
      } catch (error) {
        console.error('Error fetching search results: ', error);
      }
@@ -144,7 +149,7 @@
    const goBack = () => {
      router.back();
    };
-   </script>
+   </script>   
    
  <style scoped>
 body {
@@ -281,5 +286,12 @@ body {
 
 .delete-button:hover {
   background-color: #969696;
+}
+
+#results, .search-result-item p {
+  text-decoration: none !important; 
+  color: black; 
+  cursor: default; 
+  font-size: medium;
 }
 </style>
