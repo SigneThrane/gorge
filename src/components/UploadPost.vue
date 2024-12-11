@@ -1,13 +1,9 @@
 <template>
+    <div class="header">
+      <button class="back-button" @click="goBack"><</button>
+    <h1 class="header-title">Upload Post</h1>
+    </div>
   <div class="login-container">
-      <button class="close-button" @click="goBack">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-        </svg>
-      </button>
-
-    <h2>{{ uploadTitle }}</h2>
-
     <div class="upload-container">
       <label for="image-upload" class="upload-label">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
@@ -326,5 +322,35 @@ h2 {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    padding: 15px 16px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    background-color: #FCF7F2;
+}
+
+.back-button {
+    position: absolute;   
+    left: 20px;            
+    font-size: 20px;        
+    background: transparent; 
+    border: none;          
+    color: black;          
+}
+
+.header-title {
+    text-align: center;
+    font-size: 18px;
+    margin: 0;
+    color: black;
+    font-family: "Quicksand", serif;
+    font-weight: 500;
 }
 </style>

@@ -33,9 +33,8 @@
 
 <div v-if="post" class="info">
   <h3>{{ post.title }}</h3>
-  <p>Description: {{ post.description }}</p>
-  <p>Tags: {{ post.tag }} </p>
-  <p>Link: {{ post.link}} </p>
+  <p>{{ post.description }}  #{{ post.tag }}</p>
+  <p>{{ post.link}} </p>
 </div>
 
 <div v-else class="loading">

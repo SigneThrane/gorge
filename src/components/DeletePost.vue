@@ -58,11 +58,10 @@
   </div>
   
   <div v-if="post" class="info">
-    <h3>{{ post.title }}</h3>
-    <p>Description: {{ post.description }}</p>
-    <p>Tags: {{ post.tag }} </p>
-    <p>Link: {{ post.link}} </p>
-  </div>
+  <h3>{{ post.title }}</h3>
+  <p>{{ post.description }}  #{{ post.tag }}</p>
+  <p>{{ post.link}} </p>
+</div>
   
   <div v-else class="loading">
     <p>Loading...</p>
@@ -105,132 +104,227 @@
     </div>
   </template>
   
-<script>
-import { ref, onMounted } from 'vue';
-import { doc, getDoc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore'; // Include deleteDoc
-import { useRoute } from 'vue-router';
-import { auth, db } from '../firebaseConfig.js';
-
-export default {
-  name: 'MediaPost',
-  setup() {
-    const route = useRoute();
-    const postId = route.params.id;
-    const post = ref(null);
-    const isLoading = ref(true);
-    const liked = ref(false);
-    const showComments = ref(false);
-    const commentInput = ref(null);
-    const comments = ref([]);
-    const userName = ref('');  
-    const profileImage = ref('/public/img/icons/blankprofile.png'); 
-    const showDeleteConfirmation = ref(false); // New state for delete confirmation
-
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          alert("No user is signed in. Redirecting to login...");
-          this.$router.push('/');  
-          return;
-        }
-
-        const userRef = doc(db, 'users', user.uid);
-        const userSnapshot = await getDoc(userRef);
-        
-        if (userSnapshot.exists()) {
-          const userData = userSnapshot.data();
-          userName.value = userData.username || 'Anonymous';  
-          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';  
-        } else {
-          console.error('No user data found for the logged-in user.');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        alert('An error occurred while fetching user data.');
-      }
-    };
-
-    const fetchPost = async () => {
-      try {
-        const postRef = doc(db, 'posts', postId);
-        const postSnapshot = await getDoc(postRef);
-
-        if (postSnapshot.exists()) {
-          post.value = postSnapshot.data();
-
-          const userRef = doc(db, 'users', post.value.userId);  
+  <script>
+  import { ref, onMounted } from 'vue';
+  import { doc, getDoc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore'; // Added deleteDoc import
+  import { useRoute } from 'vue-router';
+  import { auth, db } from '../firebaseConfig.js';
+  
+  export default {
+    name: 'MediaPost',
+    setup() {
+      const route = useRoute();
+      const postId = route.params.id;
+      const post = ref(null);
+      const isLoading = ref(true);
+      const liked = ref(false);
+      const showComments = ref(false);
+      const commentInput = ref(null);
+      const comments = ref([]);
+      const commentsLoading = ref(true);
+      const userName = ref('');
+      const profileImage = ref('/public/img/icons/blankprofile.png');
+      const userId = ref('');
+      const showDeleteConfirmation = ref(false); // Controls visibility of delete confirmation
+  
+      const fetchUserData = async () => {
+        try {
+          const user = auth.currentUser;
+          if (!user) {
+            alert("No user is signed in. Redirecting to login...");
+            this.$router.push('/');
+            return;
+          }
+  
+          const userRef = doc(db, 'users', user.uid);
           const userSnapshot = await getDoc(userRef);
+  
           if (userSnapshot.exists()) {
             const userData = userSnapshot.data();
-            userName.value = userData.username || 'Anonymous';  
+            userName.value = userData.username || 'Anonymous';
+            profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';
           } else {
-            console.error('No user data found for the post author.');
+            console.error('No user data found for the logged-in user.');
           }
-
-          liked.value = post.value.likes > 0;
-        } else {
-          console.error('No post found with ID:', postId);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          alert('An error occurred while fetching user data.');
         }
-      } catch (error) {
-        console.error('Error fetching post:', error);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const confirmDeletePost = () => {
-      showDeleteConfirmation.value = true;
-    };
-
-    const cancelDelete = () => {
-      showDeleteConfirmation.value = false;
-    };
-
-    const deletePost = async () => {
-      try {
-        const postRef = doc(db, 'posts', postId);
-        await deleteDoc(postRef);
-        alert('Post deleted successfully.');
+      };
+  
+      const fetchPost = async () => {
+        try {
+          const postRef = doc(db, 'posts', postId);
+          const postSnapshot = await getDoc(postRef);
+  
+          if (postSnapshot.exists()) {
+            post.value = postSnapshot.data();
+            if (post.value && post.value.userId) {
+              userId.value = post.value.userId;
+            } else {
+              console.error('Post does not have userId or post is invalid.');
+            }
+  
+            const userRef = doc(db, 'users', userId.value);
+            const userSnapshot = await getDoc(userRef);
+            if (userSnapshot.exists()) {
+              const userData = userSnapshot.data();
+              userName.value = userData.username || 'Anonymous';
+            } else {
+              console.error('No user data found for the post author.');
+            }
+  
+            liked.value = post.value.likes > 0;
+          } else {
+            console.error('No post found with ID:', postId);
+          }
+        } catch (error) {
+          console.error('Error fetching post:', error);
+        } finally {
+          isLoading.value = false;
+        }
+      };
+  
+      const fetchComments = async () => {
+        commentsLoading.value = true;
+        try {
+          const commentsRef = collection(db, 'posts', postId, 'comments');
+          const q = query(commentsRef, orderBy('timestamp'));
+          const querySnapshot = await getDocs(q);
+  
+          comments.value = [];
+  
+          querySnapshot.forEach(async (docSnapshot) => {
+            const commentData = docSnapshot.data();
+  
+            const userRef = doc(db, 'users', commentData.userId);
+            const userSnapshot = await getDoc(userRef);
+            if (userSnapshot.exists()) {
+              commentData.userName = userSnapshot.data().username || 'Anonymous';
+            } else {
+              commentData.userName = 'Anonymous';
+            }
+  
+            comments.value.push(commentData);
+          });
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+        } finally {
+          commentsLoading.value = false;
+        }
+      };
+  
+      const addComment = async () => {
+        const commentText = commentInput.value.value.trim();
+        if (commentText === '') return;
+  
+        try {
+          const commentsRef = collection(db, 'posts', postId, 'comments');
+          await addDoc(commentsRef, {
+            text: commentText,
+            timestamp: new Date(),
+            userId: auth.currentUser.uid,
+          });
+  
+          commentInput.value.value = '';
+          fetchComments();
+        } catch (error) {
+          console.error('Error adding comment:', error);
+        }
+      };
+  
+      const handleLike = async () => {
+        try {
+          const postRef = doc(db, 'posts', postId);
+  
+          if (liked.value) {
+            await updateDoc(postRef, {
+              likes: increment(-1),
+            });
+            liked.value = false;
+          } else {
+            await updateDoc(postRef, {
+              likes: increment(1),
+            });
+            liked.value = true;
+          }
+  
+          if (post.value) {
+            post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
+          }
+        } catch (error) {
+          console.error('Error updating likes:', error);
+        }
+      };
+  
+      const goBack = () => {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          this.$router.push('/TrendingPage');
+        }
+      };
+  
+      const toggleCommentSection = () => {
+        showComments.value = !showComments.value;
+        if (showComments.value && commentInput.value) {
+          commentInput.value.focus();
+        }
+      };
+  
+      // Show the delete confirmation modal or message
+      const confirmDeletePost = () => {
+        showDeleteConfirmation.value = true;
+      };
+  
+      // Cancel the delete action
+      const cancelDelete = () => {
         showDeleteConfirmation.value = false;
-        this.$router.push('/TrendingPage'); 
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('An error occurred while deleting the post.');
-      }
-    };
-
-    const goBack = () => {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        this.$router.push('/TrendingPage');
-      }
-    };
-
-    onMounted(() => {
-      fetchUserData();  
-      fetchPost();     
-    });
-
-    return {
-      post,
-      isLoading,
-      liked,
-      showComments,
-      commentInput,
-      comments,
-      userName, 
-      profileImage, 
-      showDeleteConfirmation, 
-      goBack,
-      confirmDeletePost, 
-      deletePost, 
-      cancelDelete, 
-    };
-  },
-};
-</script>
+      };
+  
+      // Delete the post from Firestore and navigate to the Trending page
+      const deletePost = async () => {
+        try {
+          const postRef = doc(db, 'posts', postId);
+          await deleteDoc(postRef);
+          alert('Post deleted successfully.');
+          showDeleteConfirmation.value = false;
+          this.$router.push('/MyProfile');
+        } catch (error) {
+          console.error('Error deleting post:', error);
+          alert('An error occurred while deleting the post.');
+        }
+      };
+  
+      onMounted(() => {
+        fetchUserData();
+        fetchPost();
+        fetchComments();
+      });
+  
+      return {
+        post,
+        isLoading,
+        liked,
+        showComments,
+        commentInput,
+        comments,
+        commentsLoading,
+        userName,
+        profileImage,
+        userId,
+        showDeleteConfirmation,
+        goBack,
+        handleLike,
+        toggleCommentSection,
+        addComment,
+        confirmDeletePost,
+        cancelDelete,
+        deletePost,
+      };
+    },
+  };
+  </script>
   
   <style scoped>
   body {
