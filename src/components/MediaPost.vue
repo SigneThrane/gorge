@@ -539,4 +539,17 @@ hr {
   overflow-wrap: break-word;
   width: 80%;
 }
+
+@media only screen
+and (min-width: 300px)
+and (max-width: 400px){
+
+.comment-input{
+width: 55%;
+}
+
+hr {
+  width: 86%;
+}
+}
 </style>

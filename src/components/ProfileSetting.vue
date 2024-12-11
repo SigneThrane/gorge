@@ -366,6 +366,7 @@ const goBack = () => {
   border: none;
   cursor: pointer;
   font-size: 16px; 
+  font-family: "Quicksand", serif;
 }
 
 .save-button-container {

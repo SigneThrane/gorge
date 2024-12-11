@@ -353,4 +353,18 @@ h2 {
     font-family: "Quicksand", serif;
     font-weight: 500;
 }
+
+@media only screen
+and (min-width: 300px)
+and (max-width: 400px){
+
+.login-container {
+margin-top: 10%;
+}
+
+.login-button {
+margin-left: 3%;
+}
+
+}
 </style>
