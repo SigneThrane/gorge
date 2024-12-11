@@ -5,21 +5,6 @@
     <h1 class="header-title" v-if="userName">{{ userName }}</h1>
     <h1 class="header-title" v-else>Loading user...</h1>
   </router-link>
-  
-      <div class="header-icons">
-        <router-link to="/Notification">
-          <button class="icon-button" onclick="showNotifications()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
-              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
-            </svg>
-          </button>
-        </router-link>
-        <button class="icon-button" onclick="sharePage()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-    <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-  </svg>
-        </button>
-      </div>
     </div>
   
     <div class="image-container">
@@ -41,12 +26,6 @@
         </svg>
       </button>
       <p class="number">{{ comments.length }}</p>
-  
-      <button id="share" class="bottom-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-    <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-  </svg>
-      </button>
 
       <button id="delete" class="bottom-icon" @click="confirmDeletePost">
   <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 13">
@@ -61,8 +40,6 @@
     <button class="cancel-button" @click="cancelDelete">No</button>
   </div>
 </div>
-
-
     </div>
   
     <div v-if="showComments" class="comment-section">
@@ -266,14 +243,32 @@ export default {
   .header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
+    justify-content: center; 
+    padding: 15px 16px;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 10;
     background-color: #FCF7F2;
-  }
+}
+
+.back-button {
+    position: absolute;   
+    left: 20px;            
+    font-size: 20px;        
+    background: transparent; 
+    border: none;          
+    color: black;          
+}
+
+.header-title {
+    text-align: center;
+    font-size: 18px;
+    margin: 0;
+    color: black;
+    font-family: "Quicksand", serif;
+    font-weight: 500;
+}
   
   .back-button {
     font-size: 20px;
@@ -283,21 +278,16 @@ export default {
   }
   
   .header-title {
-    flex-grow: 0.5; 
-    text-align: center;
+    display: flex;            /* Ensure the container is a flexbox */
+    justify-content: center;  /* Horizontally center the content */
+    align-items: center;      /* Vertically center the content */
+    text-align: center;       /* Align the text inside the element */
     font-size: 18px;
     margin: 0;
-    margin-left: 40px; 
     color: black;
     font-family: "Quicksand", serif;
-  font-weight: 500;
-  }
-  
-  .header-icons {
-    display: flex;
-    gap: 10px;
-    margin-right: 40px; 
-  }
+    font-weight: 500;
+}
   
   .icon-button {
     font-size: 30px;
@@ -307,19 +297,21 @@ export default {
   }
   
   .image-container {
-    margin-top: 14%;
-    display: flex;
-    justify-content: center;  
-    padding-top: 20px;     
-  }
+  margin-top: 10%;
+  display: flex;
+  justify-content: center;  
+  padding-top: 20px;     
+}
   
   .post {
-    width: 300px;  
-    height: 300px; 
-    object-fit: cover; 
-    margin: 10px;  
-    border-radius: 15px;
-  }
+  width: 300px;  
+  height: 300px; 
+  object-fit: cover; 
+  margin: 10px;  
+  border-radius: 15px;
+  background: #fcf7f2; 
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}
   
   h1 {
     margin-top: 5%;

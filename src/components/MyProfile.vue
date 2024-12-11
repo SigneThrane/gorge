@@ -2,11 +2,6 @@
    <div class="header">
     <button class="back-button" @click="goBack"><</button>
       <h1 class="header-title">My profile</h1> 
-  <div class="header-icons">
-    <button class="icon-button" onclick="sharePage()">  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-</svg></button>
-  </div>
 </div>
 <div class="backgroundcolor">
   <div class="image-container">
@@ -188,8 +183,6 @@ onMounted(() => {
 });
 </script>
 
-
-   
 <style scoped>
 *,
 *::before,
@@ -393,7 +386,7 @@ font-weight: 600;
    text-align: center;
    font-size: 18px;
    margin: 0;
-   margin-left: 30px; 
+   margin-right: 90px;
    color: black;
  }
  

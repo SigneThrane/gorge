@@ -10,11 +10,11 @@
       <p>Username</p>
       <input type="text" v-model="username" class="input-field" />
 
-      <p>Password</p>
-      <input type="password" v-model="password" class="input-field" />
-
       <p>E-Mail</p>
       <input type="email" v-model="email" class="input-field" />
+
+      <p>Password</p>
+      <input type="password" v-model="password" class="input-field" />
       
       <button class="login-button" @click="createAccount">NEXT</button>
     </div>
