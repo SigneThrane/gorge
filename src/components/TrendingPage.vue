@@ -64,6 +64,7 @@ import { collection, getDocs } from 'firebase/firestore';
 
 const posts = ref([]); 
 
+//Fetch posts
 const fetchPosts = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'posts'));

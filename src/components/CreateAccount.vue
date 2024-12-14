@@ -22,23 +22,26 @@
 </template>
 
 <script setup>
+// Import 
 import { ref } from "vue";
 import { auth, db } from "../firebaseConfig.js"; 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
 import { useRouter } from "vue-router";
 
+// Declare reactive variables to hold input field data
 const fullName = ref("");
 const username = ref("");
 const email = ref("");
 const password = ref("");
 const router = useRouter(); // Using router for manual navigation
 
+// Function to create a new user account
 const createAccount = async () => {
   // Validate password length before proceeding
   if (password.value.length < 6) {
     alert("Your password must be at least 6 characters long.");
-    return; // Prevent account creation if password is too short
+    return; 
   }
 
   try {

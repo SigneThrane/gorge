@@ -17,36 +17,45 @@
 </template>
 
 <script setup>
+// Importing
 import { ref } from "vue";
 import { db, auth } from "../firebaseConfig.js"; 
 import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "vue-router"; 
 
+// Declare reactive variables
 const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
 const router = useRouter();
 
+// Function to save profile information to Firestore
 const saveProfileInfo = async () => {
   try {
+     // Get the current authenticated user
     const user = auth.currentUser;
 
+    // Check if the user is signed in
     if (!user) {
       alert("No user is signed in. Please log in again.");
       return;
     }
 
+    // Get a reference to the user's document in Firestore
     const userDocRef = doc(db, "users", user.uid);
 
+      // Update the user's document with the new profile information
     await updateDoc(userDocRef, {
       age: age.value,
       city: city.value,
       aesthetic: aesthetic.value,
     });
 
+     // Alert the user that the profile was saved successfully
     alert("Profile information saved successfully!");
     router.push("/");
   } catch (error) {
+    // Log and alert if there's an error during the process
     console.error("Error saving profile information:", error);
     alert("An error occurred while saving your profile information.");
   }

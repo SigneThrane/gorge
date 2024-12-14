@@ -103,7 +103,8 @@
        searchHistory.value = JSON.parse(savedHistory);
      }
    });
-   
+  
+   // Function to perform a search in the Firestore database
    const searchData = async () => {
      if (!searchQuery.value) {
        searchResults.value.length = 0; 
@@ -133,6 +134,7 @@
      }
    };
    
+   // Function to add a search query to the search history
    const addToSearchHistory = () => {
      if (searchQuery.value && !searchHistory.value.includes(searchQuery.value)) {
        searchHistory.value.push(searchQuery.value);
@@ -141,6 +143,7 @@
      searchQuery.value = ''; 
    };
    
+   // Function to delete a specific entry from the search history
    const deleteFromHistory = (index) => {
      searchHistory.value.splice(index, 1);
      localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));

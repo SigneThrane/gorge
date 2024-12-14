@@ -78,12 +78,13 @@ const posts = ref([]);
 const loading = ref(false);
 const currentUser = ref(null); 
 
+// Function to fetch posts based on users the current user is following
 const fetchPosts = async () => {
   try {
     loading.value = true; 
     if (!currentUser.value) return;
 
-    // 1️⃣ Step 1: Get the list of UIDs that the current user is following
+    //Get the list of UIDs that the current user is following
     const followingSnapshot = await getDocs(collection(db, `users/${currentUser.value.uid}/following`));
     const followingUids = followingSnapshot.docs.map(doc => doc.id); // Get the UIDs of the users being followed
 
@@ -91,7 +92,7 @@ const fetchPosts = async () => {
       followingUids.push(currentUser.value.uid); // Include current user's own posts
     }
 
-    // 2️⃣ Step 2: Query posts where the userId is in the list of following UIDs
+    //Query posts where the userId is in the list of following UIDs
     if (followingUids.length > 0) {
       const chunkArray = (arr, size) =>
         arr.reduce((acc, _, i) =>

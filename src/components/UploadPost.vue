@@ -100,6 +100,7 @@ const goBack = () => {
   }
 };
 
+// Function to handle image selection from input
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -108,6 +109,7 @@ const handleImageUpload = (event) => {
   }
 };
 
+// Function to upload image to Cloudinary and return the secure URL
 const uploadImageToCloudinary = async (image) => {
   const formData = new FormData();
   formData.append("file", image);
@@ -126,6 +128,7 @@ const uploadImageToCloudinary = async (image) => {
   }
 };
 
+// Function to upload the post to Firestore
 const uploadPost = async () => {
   if (!title.value || !description.value) {
     alert("Please fill in all required fields!");
@@ -148,6 +151,7 @@ const uploadPost = async () => {
       console.log("Image uploaded to Cloudinary:", imageUrl);
     }
 
+     // Create the post object with form data and user info
     const post = {
       title: title.value,
       description: description.value,

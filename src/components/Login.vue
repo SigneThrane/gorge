@@ -34,6 +34,7 @@ const email = ref("");
 const password = ref("");  
 const router = useRouter(); 
 
+// Login function that will handle the user sign-in process
 const login = async () => {
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value);

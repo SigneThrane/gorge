@@ -115,6 +115,7 @@ export default {
     const profileImage = ref('/public/img/icons/blankprofile.png');
     const userId = ref(''); 
 
+     // Fetch the current user's data 
     const fetchUserData = async () => {
       try {
         const user = auth.currentUser;
@@ -140,6 +141,7 @@ export default {
       }
     };
 
+      // Fetch the post data based on the postId
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -173,6 +175,7 @@ export default {
       }
     };
 
+    // Fetch the comments for the post
     const fetchComments = async () => {
       commentsLoading.value = true;
       try {
@@ -198,6 +201,7 @@ export default {
       }
     };
 
+    // Add a new comment to the post
     const addComment = async () => {
       const commentText = commentInput.value.value.trim();
       if (!commentText) return;
@@ -217,6 +221,7 @@ export default {
       }
     };
 
+       // Handle liking/unliking the post
     const handleLike = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -245,6 +250,7 @@ export default {
       }
     };
 
+     // Toggle visibility of the comment section
     const toggleCommentSection = () => {
       showComments.value = !showComments.value;
       if (showComments.value && commentInput.value) {

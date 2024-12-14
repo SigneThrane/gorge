@@ -106,7 +106,7 @@
   
   <script>
   import { ref, onMounted } from 'vue';
-  import { doc, getDoc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore'; // Added deleteDoc import
+  import { doc, getDoc, updateDoc, increment, collection, addDoc, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore'; 
   import { useRoute } from 'vue-router';
   import { auth, db } from '../firebaseConfig.js';
   
@@ -125,8 +125,9 @@
       const userName = ref('');
       const profileImage = ref('/public/img/icons/blankprofile.png');
       const userId = ref('');
-      const showDeleteConfirmation = ref(false); // Controls visibility of delete confirmation
+      const showDeleteConfirmation = ref(false); 
   
+       // Fetch user data (e.g., username, profile image) for the logged-in user
       const fetchUserData = async () => {
         try {
           const user = auth.currentUser;
@@ -152,6 +153,7 @@
         }
       };
   
+       // Fetch the post data from Firestore
       const fetchPost = async () => {
         try {
           const postRef = doc(db, 'posts', postId);
@@ -185,6 +187,7 @@
         }
       };
   
+        // Fetch comments for the post
       const fetchComments = async () => {
         commentsLoading.value = true;
         try {
@@ -214,6 +217,7 @@
         }
       };
   
+      // Add a new comment to the post
       const addComment = async () => {
         const commentText = commentInput.value.value.trim();
         if (commentText === '') return;
@@ -233,6 +237,7 @@
         }
       };
   
+      // Handle post likes/unlikes
       const handleLike = async () => {
         try {
           const postRef = doc(db, 'posts', postId);
@@ -372,10 +377,10 @@
   }
   
   .header-title {
-    display: flex;            /* Ensure the container is a flexbox */
-    justify-content: center;  /* Horizontally center the content */
-    align-items: center;      /* Vertically center the content */
-    text-align: center;       /* Align the text inside the element */
+    display: flex;            
+    justify-content: center;  
+    align-items: center;      
+    text-align: center;       
     font-size: 18px;
     margin: 0;
     color: black;
