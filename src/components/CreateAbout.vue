@@ -29,7 +29,6 @@ const router = useRouter();
 
 const saveProfileInfo = async () => {
   try {
-
     const user = auth.currentUser;
 
     if (!user) {
@@ -37,9 +36,7 @@ const saveProfileInfo = async () => {
       return;
     }
 
-  
     const userDocRef = doc(db, "users", user.uid);
-
 
     await updateDoc(userDocRef, {
       age: age.value,
@@ -48,8 +45,6 @@ const saveProfileInfo = async () => {
     });
 
     alert("Profile information saved successfully!");
-
-
     router.push("/");
   } catch (error) {
     console.error("Error saving profile information:", error);

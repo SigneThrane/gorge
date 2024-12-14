@@ -1,4 +1,21 @@
 <template>
+ <div>
+    <h1>Notifications</h1>
+    <!-- Loading State -->
+    <div v-if="isLoading">Loading...</div>
+    
+    <!-- No Notifications Found -->
+    <div v-if="notifications.length === 0 && !isLoading">No new notifications</div>
+    
+    <!-- Notifications List -->
+    <ul v-else>
+      <li v-for="(notification, index) in notifications" :key="index">
+        <p>{{ notification.message }}</p>
+        <p>{{ notification.timestamp.toLocaleString() }}</p>
+      </li>
+    </ul>
+  </div>
+
    <div class="fixed-bottom-box">
       <div class="fixed-nav">
   
@@ -37,8 +54,48 @@
   </template>
   
   <script setup>
+import { ref, onMounted } from 'vue';
+import { auth, db } from '../firebaseConfig'; // Assuming Firebase is set up
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
-  </script>
+const notifications = ref([]);
+const isLoading = ref(true); // Track loading state
+const error = ref(null); // Track errors
+
+// Function to fetch notifications
+const fetchNotifications = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No user is signed in.");
+    error.value = "User not signed in.";
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    const notificationsRef = collection(db, "users", user.uid, "notifications");
+    const notificationsSnapshot = await getDocs(query(notificationsRef, orderBy("timestamp", "desc")));
+    
+    notifications.value = notificationsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        ...data,
+        timestamp: data.timestamp.toDate(), // Convert timestamp to Date object
+      };
+    });
+  } catch (err) {
+    console.error("Error fetching notifications:", err);
+    error.value = "Error fetching notifications.";
+  } finally {
+    isLoading.value = false; // Set loading state to false once data is fetched
+  }
+};
+
+// Fetch notifications when component mounts
+onMounted(() => {
+  fetchNotifications();
+});
+</script>
   
   <style scoped>
   body {

@@ -32,21 +32,13 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 
 const email = ref(""); 
 const password = ref("");  
-
 const router = useRouter(); 
-
 
 const login = async () => {
   try {
-
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
-
-
-    alert("Logged in successfully!");
-    router.push("/TrendingPage");  
-
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    router.push("/TrendingPage");
   } catch (error) {
-
     console.error("Login failed:", error);
     alert("Invalid email or password.");
   }

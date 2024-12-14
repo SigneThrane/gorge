@@ -46,6 +46,11 @@
       <input v-model="aesthetic" class="custom-input" />
     </div>
 
+    <div class="user-info">
+      <p>Bio</p>
+      <input v-model="bio" class="custom-input" />
+    </div>
+
     <div  class="save-button-container">
       <button id="save" @click="saveProfile">Save profile</button>
     </div>
@@ -89,10 +94,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { auth, db } from '../firebaseConfig';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteField } from 'firebase/firestore'; // Import deleteField to remove a field from Firestore
 import axios from 'axios';
 
 const username = ref('');
@@ -100,12 +105,64 @@ const fullName = ref('');
 const age = ref('');
 const city = ref('');
 const aesthetic = ref('');
+const bio = ref('');
 const profileImage = ref('/public/img/icons/blankprofile.png');
 const about = ref('About Me');
-const selectedImage = ref(null); 
-const isUploading = ref(false); 
+const selectedImage = ref(null);
+const isUploading = ref(false);
 const router = useRouter();
 
+// Load existing profile data to pre-fill the form
+const loadUserProfile = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      username.value = userData.username || '';
+      fullName.value = userData.fullName || '';
+      age.value = userData.age || '';
+      city.value = userData.city || '';
+      aesthetic.value = userData.aesthetic || '';
+      bio.value = userData.bio || ''; // Load bio if available, else empty string
+      profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';
+    } else {
+      console.log('User profile not found.');
+    }
+  }
+};
+
+// Save Profile Function
+const saveProfile = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userDocRef = doc(db, 'users', user.uid);
+
+    // Use deleteField() to remove bio if it's an empty string
+    const bioToSave = bio.value.trim() === '' ? deleteField() : bio.value; 
+
+    await setDoc(
+      userDocRef,
+      {
+        username: username.value,
+        fullName: fullName.value,
+        age: age.value,
+        city: city.value,
+        aesthetic: aesthetic.value,
+        profileImage: profileImage.value,
+        bio: bioToSave // Always include the bio key, either with a value or as a deleteField() call
+      },
+      { merge: true }
+    );
+
+    alert('Profile updated!');
+    router.push('/MyProfile');
+  }
+};
+
+// Cloudinary Image Upload
 const uploadImageToCloudinary = async (image) => {
   const formData = new FormData();
   formData.append('file', image);
@@ -122,6 +179,7 @@ const uploadImageToCloudinary = async (image) => {
   }
 };
 
+// Handle image selection and upload
 const uploadImage = async (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -138,28 +196,7 @@ const uploadImage = async (event) => {
   }
 };
 
-const saveProfile = async () => {
-  const user = auth.currentUser;
-  if (user) {
-    const userDocRef = doc(db, 'users', user.uid);
-    await setDoc(
-      userDocRef,
-      {
-        username: username.value,
-        fullName: fullName.value,
-        age: age.value,
-        city: city.value,
-        aesthetic: aesthetic.value,
-        profileImage: profileImage.value, 
-      },
-      { merge: true }
-    );
-
-    alert('Profile updated!');
-    router.push('/MyProfile');
-  }
-};
-
+// Go back function to navigate through history
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -167,7 +204,16 @@ const goBack = () => {
     router.push('/TrendingPage');
   }
 };
+
+// Fetch and load user profile when the component is mounted
+onMounted(() => {
+  loadUserProfile();
+});
 </script>
+
+
+
+
 
 <style scoped>
   body {

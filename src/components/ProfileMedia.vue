@@ -11,6 +11,7 @@
     </div>
     <h1>{{ username }}</h1>
     <p>{{ age }} years, {{ city }}, {{ aesthetic }}</p>
+    <p class="bio-text">{{ bio || 'This user has not added a bio yet.' }}</p>
     <div class="p-container">
       <p class="numbers1">{{ postCount }}</p>  
       <p class="numbers2">{{ followersCount }}</p>
@@ -81,24 +82,25 @@
    import { onAuthStateChanged } from 'firebase/auth';
    import { getDownloadURL, ref as storageRef } from 'firebase/storage';
    
-   // Reactive variables
+   // **Reactive Variables**
    const username = ref('Loading...');
    const age = ref('Loading...');
    const city = ref('Loading...');
    const aesthetic = ref('Loading...');
+   const bio = ref(''); 
    const profileImage = ref('');
    const postCount = ref(0);
    const posts = ref([]);
    const currentUserId = ref(null);
    const isFollowing = ref(false);
-   const followersCount = ref(0); // New reactive variable for followers count
-   const followingCount = ref(0); // New reactive variable for following count
+   const followersCount = ref(0); 
+   const followingCount = ref(0); 
    
    const route = useRoute();
    const router = useRouter();
-   const uid = route.params.uid; 
+   const uid = route.params.uid;
    
-   // Get the current user's ID
+   // **Get current user's ID**
    onAuthStateChanged(auth, (user) => {
      if (user) {
        currentUserId.value = user.uid;
@@ -109,6 +111,7 @@
      }
    });
    
+   // **Fetch Profile Info**
    const fetchProfileInfo = async () => {
      try {
        const userDocRef = doc(db, 'users', uid);
@@ -120,9 +123,15 @@
          age.value = userData.age;
          city.value = userData.city;
          aesthetic.value = userData.aesthetic;
-         profileImage.value = userData.profileImage.startsWith('https://') 
-           ? userData.profileImage 
-           : await getDownloadURL(storageRef(storage, userData.profileImage));
+         bio.value = userData.bio || 'This user has not added a bio yet.';
+         
+         if (userData.profileImage) {
+           profileImage.value = userData.profileImage.startsWith('https://') 
+             ? userData.profileImage 
+             : await getDownloadURL(storageRef(storage, userData.profileImage));
+         } else {
+           profileImage.value = '/default-avatar.png'; // Fallback if no profile image is provided
+         }
        } else {
          console.error("User not found");
        }
@@ -131,6 +140,7 @@
      }
    };
    
+   // **Fetch User Posts**
    const fetchPostsForUser = async () => {
      try {
        const postsQuery = query(collection(db, 'posts'), where('userId', '==', uid)); 
@@ -147,6 +157,7 @@
      }
    };
    
+   // **Check If User is Following**
    const checkIfFollowing = async () => {
      if (!currentUserId.value || !uid) return;
    
@@ -159,6 +170,7 @@
      }
    };
    
+   // **Toggle Follow/Unfollow**
    const toggleFollow = async () => {
      if (!currentUserId.value || !uid) return;
    
@@ -166,10 +178,10 @@
        const followDocRef = doc(db, `users/${uid}/followers/${currentUserId.value}`);
        if (isFollowing.value) {
          await deleteDoc(followDocRef);
-         followersCount.value -= 1; // Decrement followers
+         followersCount.value -= 1; 
        } else {
          await setDoc(followDocRef, { followedAt: new Date() });
-         followersCount.value += 1; // Increment followers
+         followersCount.value += 1; 
        }
        isFollowing.value = !isFollowing.value;
      } catch (error) {
@@ -177,45 +189,46 @@
      }
    };
    
-   // Fetch the number of followers for the user
+   // **Fetch Followers Count**
    const fetchFollowersCount = async () => {
      try {
        const followersQuery = query(collection(db, `users/${uid}/followers`));
        const querySnapshot = await getDocs(followersQuery);
-       followersCount.value = querySnapshot.size; // Update the count
+       followersCount.value = querySnapshot.size;
      } catch (error) {
        console.error('Error fetching followers count:', error);
      }
    };
    
-   // Fetch the number of users this person is following
+   // **Fetch Following Count**
    const fetchFollowingCount = async () => {
      try {
        if (!currentUserId.value) return;
    
        const followingQuery = query(collection(db, `users/${currentUserId.value}/following`));
        const querySnapshot = await getDocs(followingQuery);
-       followingCount.value = querySnapshot.size; // Update the count
+       followingCount.value = querySnapshot.size; 
      } catch (error) {
        console.error('Error fetching following count:', error);
      }
    };
-
-   const goBack = () => {
-  if (window.history.length > 1) {
-    window.history.back();
-  } else {
-    router.push('/TrendingPage');
-  }
-};
    
+   // **Go Back Navigation**
+   const goBack = () => {
+     if (window.history.length > 1) {
+       window.history.back();
+     } else {
+       router.push('/TrendingPage');
+     }
+   };
+   
+   // **Run on Component Mount**
    onMounted(() => {
      fetchProfileInfo();
      fetchPostsForUser();
-     fetchFollowersCount(); // Call this function on mount
+     fetchFollowersCount(); 
    });
    </script>
-   
    
    
  <style scoped>

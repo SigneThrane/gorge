@@ -3,7 +3,7 @@
     <div class="login-container">
       <img class="logo" src="/public/img/icons/logo.png" alt="Gorge Logo" />
       <h2>CREATE PROFILE</h2>
-  
+
       <p>First and last name</p>
       <input type="text" v-model="fullName" class="input-field" />
 
@@ -20,6 +20,7 @@
     </div>
   </body>
 </template>
+
 <script setup>
 import { ref } from "vue";
 import { auth, db } from "../firebaseConfig.js"; 
@@ -54,8 +55,6 @@ const createAccount = async () => {
       uid: user.uid, 
     });
 
-    alert("Account created successfully!");
-
     // Navigate to the next page after successful account creation
     router.push("/CreateAbout"); // This will push the user to the next page
     
@@ -73,9 +72,8 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #FCF7F2;
   font-family: "Quicksand", serif;
+  background-color: #FCF7F2;
 }
 
 .login-container {
@@ -93,7 +91,6 @@ h2 {
   font-size: 24px;
   color: #BC7344;
   margin-bottom: 15px;
-  font-family: "Quicksand", serif;
 }
 
 p {
@@ -102,7 +99,6 @@ p {
   color: #BC7344;
   margin-bottom: 5px;
   margin-top: 2%;
-  font-family: "Quicksand", serif;
 }
 
 .input-field {
@@ -112,7 +108,6 @@ p {
   font-size: 16px;
   border: 1px solid #533F31;
   border-radius: 50px;
-  font-family: "Quicksand", serif;
 }
 
 .login-button {

@@ -19,14 +19,17 @@
     </router-link>
   </div>
 
-  <div class="image-grid">
+  <div class="content">
+  <div v-if="loading">Loading...</div>
+  <div class="image-grid" v-else>
     <div class="image" v-for="post in posts" :key="post.id">
-      <!-- Maintain the same structure -->
       <router-link :to="`/MediaPost/${post.id}`">
         <img :src="post.imageUrl" :alt="post.title" />
       </router-link>
     </div>
   </div>
+</div>
+
 
   <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -72,41 +75,52 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const posts = ref([]); 
-const currentUser = ref(null); // To store the currently logged-in user
+const loading = ref(false);
+const currentUser = ref(null); 
 
 const fetchPosts = async () => {
   try {
-    if (currentUser.value) {
-      // Fetch the list of users the current user is following
-      const followingSnapshot = await getDocs(collection(db, 'Followers', currentUser.value.uid, 'following'));
-      const followingUids = followingSnapshot.docs.map(doc => doc.id);
-      // Add the current user's UID to the list of followed users
-      followingUids.push(currentUser.value.uid);
+    loading.value = true; 
+    if (!currentUser.value) return;
 
-      // Query the posts collection for posts by the current user and the users they are following
-      const postsQuery = query(
-        collection(db, 'posts'),
-        where('userId', 'in', followingUids) // Filter posts by the userId being in the following list
+    // 1️⃣ Step 1: Get the list of UIDs that the current user is following
+    const followingSnapshot = await getDocs(collection(db, `users/${currentUser.value.uid}/following`));
+    const followingUids = followingSnapshot.docs.map(doc => doc.id); // Get the UIDs of the users being followed
+
+    if (!followingUids.includes(currentUser.value.uid)) {
+      followingUids.push(currentUser.value.uid); // Include current user's own posts
+    }
+
+    // 2️⃣ Step 2: Query posts where the userId is in the list of following UIDs
+    if (followingUids.length > 0) {
+      const chunkArray = (arr, size) =>
+        arr.reduce((acc, _, i) =>
+          i % size ? acc : [...acc, arr.slice(i, i + size)], []);
+
+      const chunks = chunkArray(followingUids, 10); // Firestore 'in' has a max of 10 UIDs
+      const postPromises = chunks.map(chunk => 
+        getDocs(query(collection(db, 'posts'), where('userId', 'in', chunk)))
       );
-      const querySnapshot = await getDocs(postsQuery);
-      posts.value = querySnapshot.docs.map(doc => ({
-        id: doc.id, 
-        ...doc.data() 
-      }));
+
+      const postSnapshots = await Promise.all(postPromises);
+      posts.value = postSnapshots.flatMap(snapshot => 
+        snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      );
     }
   } catch (error) {
     console.error('Error fetching posts:', error);
+  } finally {
+    loading.value = false; 
   }
 };
 
 const getCurrentUser = () => {
   onAuthStateChanged(auth, (user) => {
+    currentUser.value = user;
     if (user) {
-      currentUser.value = user;
-      fetchPosts(); // Fetch posts once the user is authenticated
+      fetchPosts();
     } else {
-      currentUser.value = null; // Set to null if no user is logged in
-      posts.value = []; // Optionally clear posts when not logged in
+      posts.value = [];
     }
   });
 };

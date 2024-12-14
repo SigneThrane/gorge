@@ -9,6 +9,7 @@
     </div>
  <h1>{{ username }}</h1>
     <p>{{ age }} years, {{ city }}, {{ aesthetic }}</p>
+    <p v-if="bio && bio.trim() !== ''">{{ bio }}</p>
  
  <div class="p-container">
 <p class="numbers1">{{ postCount }}</p>  
@@ -80,10 +81,12 @@ import { useRouter } from 'vue-router';
 import { auth, db } from '../firebaseConfig'; 
 import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
+// User data
 const username = ref("Loading...");
 const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
+const bio = ref("");  // No default "No bio available" to prevent showing it
 const profileImage = ref("/public/img/icons/blankprofile.png"); 
 const posts = ref([]); 
 const postCount = ref(0); 
@@ -110,13 +113,19 @@ const fetchUserData = async () => {
       const userData = userDoc.data();
       console.log(userData);  // Log the entire userData to check structure
 
+      // Set user data values
       username.value = userData.username || "Anonymous";
       age.value = userData.age || "N/A";
       city.value = userData.city || "Unknown";
       aesthetic.value = userData.aesthetic || "Not specified";
+      
+      // Handle bio (only display it if it exists and is not an empty string)
+      bio.value = userData.bio !== undefined && userData.bio.trim() !== '' ? userData.bio : '';
+
+      // Fetch profile image or use default
       profileImage.value = userData.profileImage || "/public/img/icons/blankprofile.png";
       
-      // Fetch followers and following counts using subcollections
+      // Fetch followers and following counts
       fetchFollowersAndFollowing(user.uid);
     } else {
       console.error("No user data found for the logged-in user.");
@@ -156,7 +165,8 @@ const fetchPosts = async () => {
       console.error("No user is signed in.");
       return;
     }
-    
+
+    // Query for posts made by the logged-in user
     const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.uid));
     const querySnapshot = await getDocs(postsQuery);
 
@@ -168,6 +178,7 @@ const fetchPosts = async () => {
   }
 };
 
+// Go back function
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -176,7 +187,7 @@ const goBack = () => {
   }
 };
 
-// Fetch user data and posts on mounted
+// Fetch user data and posts when the component is mounted
 onMounted(() => {
   fetchUserData();
   fetchPosts();
