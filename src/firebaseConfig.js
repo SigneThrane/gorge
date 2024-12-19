@@ -1,10 +1,8 @@
-// firebaseConfig.js
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';  // Import Authentication
-import { getFirestore } from 'firebase/firestore'; // Import Firestore
-import { getStorage } from 'firebase/storage'; // Import Storage
+import { getAuth } from 'firebase/auth'; 
+import { getFirestore } from 'firebase/firestore'; 
+import { getStorage } from 'firebase/storage'; 
 
-// Firebase configuration object (replace with your own config details)
 const firebaseConfig = {
   apiKey: "AIzaSyBht85PRDzgqPteX3H5V4ncirIHbXpC2fw",
   authDomain: "gorge-f34e3.firebaseapp.com",
@@ -15,12 +13,10 @@ const firebaseConfig = {
   measurementId: "G-LNXKZKVVFM"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize services
-const auth = getAuth(app);       // Authentication instance
-const db = getFirestore(app);    // Firestore instance
-const storage = getStorage(app); // Storage instance
+const auth = getAuth(app);     
+const db = getFirestore(app);    
+const storage = getStorage(app); 
 
-export { auth, db, storage };  // Export the instances for use in your components
+export { auth, db, storage };  

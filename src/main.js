@@ -4,13 +4,13 @@ import { createPinia } from 'pinia';
 
 import App from './App.vue';
 import router from './router';
-import i18n from './i18n'; // Import the Vue I18n instance
+import i18n from './i18n'; 
 import './registerServiceWorker';
 
 const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
-app.use(i18n); // Add the i18n plugin to the app
+app.use(i18n); 
 
 app.mount('#app');
