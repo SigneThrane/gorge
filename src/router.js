@@ -12,6 +12,7 @@ import MyProfile from './components/MyProfile.vue'
 import Notification from './components/Notification.vue'
 import Search from './components/Search.vue'
 import DeletePost from './components/DeletePost.vue'
+import Boards from './components/Boards.vue'
 
 export default createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +81,11 @@ export default createRouter({
       path: '/DeletePost/:id',
       name: 'DeletePost',
       component: DeletePost
+    },
+    {
+      path: '/Boards',
+      name: 'Boards',
+      component: Boards
     },
 
   ]

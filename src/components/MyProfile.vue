@@ -27,6 +27,10 @@
       <router-link to="/ProfileSetting">
      <button id="edit">Edit profile</button>
     </router-link>
+
+    <router-link to="/Boards">
+     <button id="edit">Boards</button>
+    </router-link>
      </div>
    </div>
    
@@ -437,6 +441,7 @@ font-weight: 600;
   display: flex;
   justify-content: center;
   align-items: center;  
+  gap: 10px;
 }
 
  .fixed-bottom-box {

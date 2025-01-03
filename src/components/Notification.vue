@@ -152,5 +152,9 @@ onMounted(() => {
   .add-button:hover {
     background-color: #643C2D;
   }
+
+  h1{
+    color: #B66B4D;
+  }
   </style>
   
