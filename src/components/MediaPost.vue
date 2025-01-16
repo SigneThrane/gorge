@@ -29,11 +29,25 @@
       <span v-if="commentsLoading">Loading...</span>
       <span v-else>{{ comments.length }}</span>
     </p>
-    <button id="save" class="bottom-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
-  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-</svg>
-    </button>
+    <button id="save" class="bottom-icon" @click="handleSave">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="22"
+    height="22"
+    fill="currentColor"
+    viewBox="0 0 16 16"
+  >
+    <path
+      v-if="saved"
+      d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"
+    />
+    <path
+      v-else
+      d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"
+    />
+  </svg>
+</button>
+
   </div>
 
   <div v-if="post" class="info">
@@ -111,32 +125,34 @@ export default {
     const postId = route.params.id;
     const post = ref(null);
     const isLoading = ref(true);
-    const liked = ref(false);
+ // Reactivitet for "liked" og "saved" (Vue 3 Composition API)
+    const liked = ref(false); // Holder styr på, om indlægget er liket
+    const saved = ref(false); // Holder styr på, om indlægget er gemt
     const showComments = ref(false);
     const commentInput = ref(null);
     const comments = ref([]);
     const commentsLoading = ref(true);
     const userName = ref('');
     const profileImage = ref('/public/img/icons/blankprofile.png');
-    const userId = ref(''); 
+    const userId = ref('');
 
-     // Fetch the current user's data 
+    // Fetch the current user's data
     const fetchUserData = async () => {
       try {
         const user = auth.currentUser;
         if (!user) {
-          alert("No user is signed in. Redirecting to login...");
-          this.$router.push('/');  
+          alert('No user is signed in. Redirecting to login...');
+          this.$router.push('/');
           return;
         }
 
         const userRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userRef);
-        
+
         if (userSnapshot.exists()) {
           const userData = userSnapshot.data();
-          userName.value = userData.username || 'Anonymous';  
-          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';  
+          userName.value = userData.username || 'Anonymous';
+          profileImage.value = userData.profileImage || '/public/img/icons/blankprofile.png';
         } else {
           console.error('No user data found for the logged-in user.');
         }
@@ -146,7 +162,7 @@ export default {
       }
     };
 
-      // Fetch the post data based on the postId
+    // Fetch the post data based on the postId
     const fetchPost = async () => {
       try {
         const postRef = doc(db, 'posts', postId);
@@ -155,7 +171,7 @@ export default {
         if (postSnapshot.exists()) {
           post.value = postSnapshot.data();
           if (post.value && post.value.userId) {
-            userId.value = post.value.userId;  
+            userId.value = post.value.userId;
           } else {
             console.error('Post does not have userId or post is invalid.');
           }
@@ -164,12 +180,13 @@ export default {
           const userSnapshot = await getDoc(userRef);
           if (userSnapshot.exists()) {
             const userData = userSnapshot.data();
-            userName.value = userData.username || 'Anonymous';  
+            userName.value = userData.username || 'Anonymous';
           } else {
             console.error('No user data found for the post author.');
           }
 
           liked.value = post.value.likes > 0;
+          saved.value = post.value.saved || false; // Initialize saved state
         } else {
           console.error('No post found with ID:', postId);
         }
@@ -187,15 +204,17 @@ export default {
         const commentsRef = collection(db, 'posts', postId, 'comments');
         const q = query(commentsRef, orderBy('timestamp'));
         const querySnapshot = await getDocs(q);
-        
+
         comments.value = []; // Clear the existing comments
 
         querySnapshot.forEach(async (docSnapshot) => {
           const commentData = docSnapshot.data();
-          
+
           const userRef = doc(db, 'users', commentData.userId);
           const userSnapshot = await getDoc(userRef);
-          commentData.userName = userSnapshot.exists() ? userSnapshot.data().username : 'Anonymous';
+          commentData.userName = userSnapshot.exists()
+            ? userSnapshot.data().username
+            : 'Anonymous';
 
           comments.value.push(commentData);
         });
@@ -216,9 +235,9 @@ export default {
         await addDoc(commentsRef, {
           text: commentText,
           timestamp: new Date(),
-          userId: auth.currentUser.uid,  
+          userId: auth.currentUser.uid,
         });
-        
+
         commentInput.value.value = '';
         fetchComments(); // Refresh comments after adding new one
       } catch (error) {
@@ -226,26 +245,98 @@ export default {
       }
     };
 
-       // Handle liking/unliking the post
-    const handleLike = async () => {
-      try {
-        const postRef = doc(db, 'posts', postId);
-        
-        if (liked.value) {
-          await updateDoc(postRef, { likes: increment(-1) });
-          liked.value = false;
-        } else {
-          await updateDoc(postRef, { likes: increment(1) });
-          liked.value = true;
-        }
+  // Håndtering af at like/unlike et indlæg
+const handleLike = async () => {
+  const user = auth.currentUser; // Hent den nuværende bruger fra autentifikationssystemet
+  if (!user) {
+    alert('No user is signed in. Redirecting to login...'); // Advarsel hvis ingen bruger er logget ind
+    this.$router.push('/'); // Redirect til login-siden
+    return; // Stop udførslen af funktionen
+  }
 
-        if (post.value) {
-          post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
+  try {
+    const postRef = doc(db, 'posts', postId); // Reference til det aktuelle indlæg i Firestore
+    const userRef = doc(db, 'users', user.uid); // Reference til den aktuelle bruger i Firestore
+
+    if (liked.value) {
+      // Hvis indlægget allerede er liket, fjern like
+      await updateDoc(postRef, { likes: increment(-1) }); // Decrement likes med 1
+      liked.value = false; // Opdater lokal tilstand
+
+      // Fjern indlægget fra likedPosts for brugeren
+      const userSnapshot = await getDoc(userRef); // Hent brugerens data
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        if (userData.likedPosts) {
+          await updateDoc(userRef, {
+            likedPosts: userData.likedPosts.filter(id => id !== postId) // Fjern postId fra likedPosts
+          });
         }
-      } catch (error) {
-        console.error('Error updating likes:', error);
       }
-    };
+    } else {
+      // Hvis indlægget ikke er liket, tilføj like
+      await updateDoc(postRef, { likes: increment(1) }); // Increment likes med 1
+      liked.value = true; // Opdater lokal tilstand
+
+      // Tilføj indlægget til likedPosts for brugeren
+      const userSnapshot = await getDoc(userRef); // Hent brugerens data
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const likedPosts = userData.likedPosts || []; // Hent likedPosts eller en tom array
+        await updateDoc(userRef, {
+          likedPosts: [...likedPosts, postId] // Tilføj postId til likedPosts
+        });
+      }
+    }
+
+    // Opdater lokalt antal likes
+    if (post.value) {
+      post.value.likes = (post.value.likes || 0) + (liked.value ? 1 : -1);
+    }
+  } catch (error) {
+    console.error('Error updating likes:', error); // Fejlbesked hvis noget går galt
+  }
+};
+
+// Håndtering af at gemme/ikke gemme et indlæg
+const handleSave = async () => {
+  try {
+    const user = auth.currentUser; // Hent den nuværende bruger fra autentifikationssystemet
+    if (!user) {
+      alert('No user is signed in. Redirecting to login...'); // Advarsel hvis ingen bruger er logget ind
+      this.$router.push('/'); // Redirect til login-siden
+      return; // Stop udførslen af funktionen
+    }
+
+    const userRef = doc(db, 'users', user.uid); // Reference til den aktuelle bruger i Firestore
+    const userSnapshot = await getDoc(userRef); // Hent brugerens data
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data(); // Hent brugerens data
+
+      // Check om indlægget allerede er gemt
+      const isPostSaved = userData.savedPosts && userData.savedPosts.includes(postId);
+
+      if (isPostSaved) {
+        // Fjern indlægget fra savedPosts, hvis det allerede er gemt
+        await updateDoc(userRef, {
+          savedPosts: userData.savedPosts.filter(post => post !== postId) // Fjern postId fra savedPosts
+        });
+        saved.value = false; // Opdater lokal tilstand
+      } else {
+        // Tilføj indlægget til savedPosts, hvis det ikke er gemt
+        await updateDoc(userRef, {
+          savedPosts: [...(userData.savedPosts || []), postId] // Tilføj postId til savedPosts
+        });
+        saved.value = true; // Opdater lokal tilstand
+      }
+    } else {
+      console.error('User data not found'); // Fejlbesked hvis brugerdata ikke findes
+    }
+  } catch (error) {
+    console.error('Error updating saved state:', error); // Fejlbesked hvis noget går galt
+  }
+};
 
     const goBack = () => {
       if (window.history.length > 1) {
@@ -255,7 +346,7 @@ export default {
       }
     };
 
-     // Toggle visibility of the comment section
+    // Toggle visibility of the comment section
     const toggleCommentSection = () => {
       showComments.value = !showComments.value;
       if (showComments.value && commentInput.value) {
@@ -273,20 +364,23 @@ export default {
       post,
       isLoading,
       liked,
+      saved, // Added saved to return
       showComments,
       commentInput,
       comments,
-      commentsLoading, 
-      userName, 
-      profileImage, 
-      userId,  
+      commentsLoading,
+      userName,
+      profileImage,
+      userId,
       goBack,
       handleLike,
+      handleSave, // Added handleSave to return
       toggleCommentSection,
       addComment,
     };
   },
 };
+
 </script>
 
 <style scoped>
@@ -479,6 +573,13 @@ h1 {
 .bi-heart {
   fill: #B66B4D; 
 }
+
+
+.bi-bookmark-fill {
+  color: #B66B4D;
+  fill: currentColor;
+}
+
 
 .comment-section{
   font-size: 15px;

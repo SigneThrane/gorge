@@ -27,20 +27,73 @@
       <router-link to="/ProfileSetting">
      <button id="edit">Edit profile</button>
     </router-link>
-
-    <router-link to="/Boards">
-     <button id="edit">Boards</button>
-    </router-link>
      </div>
+
+     <div class="grid">
+  <div>
+    <button 
+      :class="{ active: activeSection === 'grid' }" 
+      @click="switchSection('grid')"
+      id="gridIcon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
+  <path d="M6 1v3H1V1zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1zm14 12v3h-5v-3zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 
+  1-1v-3a1 1 0 0 0-1-1zM6 8v7H1V8zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm14-6v7h-5V1zm-5-1a1 1 0 0 0-1 1v7a1 1 0 
+  0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1z"/>
+</svg>
+    </button>
+  </div>
+
+  <div>
+    <button 
+      :class="{ active: activeSection === 'liked' }" 
+      @click="switchSection('liked')"
+      id="heart">
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 
+        5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 
+        3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+      </svg>
+    </button>
+  </div>
+
+  <div>
+    <button 
+      :class="{ active: activeSection === 'saved' }" 
+      @click="switchSection('saved')"
+      id="save">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
+  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+</svg>
+    </button>
+  </div>
+</div>
    </div>
    
-   <div class="image-grid">
+   <div class="image-grid" v-if="activeSection === 'grid'">
   <div class="image" v-for="post in posts" :key="post.id">
     <router-link :to="`/DeletePost/${post.id}`">
       <img :src="post.imageUrl" :alt="post.title" />
     </router-link>
   </div>
 </div>
+
+<div class="image-grid" v-if="activeSection === 'liked'">
+  <div class="image" v-for="post in likedPosts" :key="post.id">
+    <router-link :to="`/MediaPost/${post.id}`">
+      <img :src="post.imageUrl" :alt="post.title" />
+    </router-link>
+  </div>
+</div>
+
+<div class="image-grid" v-if="activeSection === 'saved'">
+  <div class="image" v-for="post in savedPosts" :key="post.id">
+    <router-link :to="`/MediaPost/${post.id}`">
+      <img :src="post.imageUrl" :alt="post.title" />
+    </router-link>
+  </div>
+</div>
+
+
 
      <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -90,12 +143,15 @@ const username = ref("Loading...");
 const age = ref("");
 const city = ref("");
 const aesthetic = ref("");
-const bio = ref("");  // No default "No bio available" to prevent showing it
+const bio = ref("");  
 const profileImage = ref("/public/img/icons/blankprofile.png"); 
 const posts = ref([]); 
 const postCount = ref(0); 
 const followersCount = ref(0); 
 const followingCount = ref(0); 
+// Reactive arrays til at holde data for gemte og likede opslag
+const savedPosts = ref([]);
+const likedPosts = ref([]);
 
 const router = useRouter();
 
@@ -182,6 +238,83 @@ const fetchPosts = async () => {
   }
 };
 
+// Fetch saved posts by post document IDs stored in savedPosts
+const fetchSavedPosts = async (uid) => {
+  try {
+    // Get the user's saved posts from their document
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef); // Få dokumentet
+
+    if (userDoc.exists()) {
+      // Hvis dokumentet findes, udtræk brugerdata
+      const userData = userDoc.data();
+      const savedPostIds = userData.savedPosts || []; // Array af gemte post-ID'er
+
+      // Fetch the full post data for each saved post ID
+      const postsPromises = savedPostIds.map(async (postId) => {
+        const postDocRef = doc(db, "posts", postId); // Reference til post-dokumentet
+        const postDoc = await getDoc(postDocRef); 
+        
+        if (postDoc.exists()) {
+         // Hvis post-dokumentet findes, returnér dets data sammen med ID'et
+          return { id: postDoc.id, ...postDoc.data() };
+        } else {
+          console.warn(`Post with ID ${postId} not found.`);
+          return null; // Håndter fejl ved hentning af gemte opslag
+        }
+      });
+
+      // Wait for all posts to be fetched and filter out any null results
+      savedPosts.value = (await Promise.all(postsPromises)).filter(post => post !== null);
+    } else {
+      console.error("User document not found.");
+    }
+  } catch (error) {
+    // Håndter fejl ved hentning af gemte opslag
+    console.error("Error fetching saved posts:", error);
+    alert("An error occurred while fetching saved posts.");
+  }
+};
+
+// Fetch liked posts by post document IDs stored in likedPosts
+const fetchLikedPosts = async (uid) => {
+  try {
+    // Get the user's document from Firestore
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+       // Hvis dokumentet findes, udtræk brugerdata
+      const userData = userDoc.data();
+      const likedPostIds = userData.likedPosts || []; // Array af likede post-ID'er
+
+      // Fetch the full post data for each liked post ID
+      const postsPromises = likedPostIds.map(async (postId) => {
+        const postDocRef = doc(db, "posts", postId);  // Reference til post-dokumentet
+        const postDoc = await getDoc(postDocRef);
+
+        if (postDoc.exists()) {
+          // Hvis post-dokumentet findes, returnér dets data sammen med ID'et
+          return { id: postDoc.id, ...postDoc.data() };
+        } else {
+          console.warn(`Post with ID ${postId} not found.`);
+          return null; // Håndter tilfælde, hvor posten ikke findes
+        }
+      });
+
+      // Wait for all posts to be fetched and filter out any null results
+      likedPosts.value = (await Promise.all(postsPromises)).filter(post => post !== null);
+    } else {
+      console.error("User document not found.");
+    }
+  } catch (error) {
+       // Håndter fejl ved hentning af likede opslag
+    console.error("Error fetching liked posts:", error);
+    alert("An error occurred while fetching liked posts.");
+  }
+};
+
+
 // Go back function
 const goBack = () => {
   if (window.history.length > 1) {
@@ -191,10 +324,27 @@ const goBack = () => {
   }
 };
 
-// Fetch user data and posts when the component is mounted
+// Reactive variabel til at holde styr på den aktive sektion (default er 'grid')
+const activeSection = ref('grid'); // Standard sektion
+
+// Funktion til at skifte den aktive sektion baseret på brugerens valg
+const switchSection = (section) => {
+  activeSection.value = section; // Opdater den aktive sektion
+};
+
+// Når komponenten mountes (renderes første gang)
 onMounted(() => {
-  fetchUserData();
-  fetchPosts();
+  // Hent brugerens data og opslag fra databasen
+  fetchUserData(); // Funktion til at hente brugerdata
+  fetchPosts();    // Funktion til at hente alle opslag
+
+  // Tjek om en bruger er logget ind via Firebase Auth
+  const user = auth.currentUser; 
+  if (user) {
+    // Hvis brugeren er logget ind, hent deres gemte og likede opslag
+    fetchSavedPosts(user.uid);   // Hent gemte opslag baseret på brugerens ID
+    fetchLikedPosts(user.uid);  // Hent likede opslag baseret på brugerens ID
+  }
 });
 </script>
 
@@ -492,5 +642,39 @@ font-weight: 600;
 
 .add-button:hover {
   background-color: #643C2D;
+}
+
+.grid {
+  display: flex;
+    gap: 50px; 
+    justify-content: center; 
+    align-items: center; 
+    margin-top: 7%;
+    margin-bottom: -4%;
+  }
+
+  #gridIcon, #heart, #save{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+button.active {
+  border-bottom: 2px solid #FC7388; 
+}
+
+button svg {
+  fill: #643C2D;
+}
+
+button.active svg {
+  fill: #FC7388; 
 }
 </style>
