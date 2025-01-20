@@ -7,11 +7,14 @@
      <!-- Loading State -->
      <div v-if="isLoading">Loading...</div>
 
-<!-- No Notifications Found -->
+<!-- notifications.length === 0 til at tjekke om array notifications er tomt -->
 <div id="noti" v-if="notifications.length === 0 && !isLoading">No new notifications</div>
 
-<!-- Notifications List -->
+<!-- Bruger en v-else til at sikre at denne sektion kun bliver vist hvis brugeren har fået en ny følger, den bliver kun vist hvis det forrige v-if  
+ ikke er sandt. Så hvis der er notifikationer i mit array notifications og isLoading er falsk -->
 <ul v-else>
+<!-- Har en v-for på mit listeelement, bruger v-for til at loope gennem hver enkelt meddelelse i arrayet notfications.
+   :key="index" bliver brugt til at holde styr på hvilke listeelementer der er blevet ændret, fjernet eller tilføjet.  -->
   <li v-for="(notification, index) in notifications" :key="index" class="notification-item">
     <img 
       v-if="notification.profilePicture" 
@@ -133,6 +136,14 @@ const fetchNotifications = () => {
 onMounted(() => {
   fetchNotifications(); // Starter hentning af notifikationer
 });
+
+const goBack = () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        this.$router.push('/TrendingPage');
+      }
+    };
  </script>
    
    <style scoped>

@@ -29,6 +29,7 @@
       <span v-if="commentsLoading">Loading...</span>
       <span v-else>{{ comments.length }}</span>
     </p>
+   <!--  en @click="handleSave" som har en klik even metode med handleSave, når den bliver klikket vil elementet blive gemt. -->
     <button id="save" class="bottom-icon" @click="handleSave">
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -125,8 +126,7 @@ export default {
     const postId = route.params.id;
     const post = ref(null);
     const isLoading = ref(true);
- // Reactivitet for "liked" og "saved" (Vue 3 Composition API)
-    const liked = ref(false); // Holder styr på, om indlægget er liket
+    const liked = ref(false); 
     const saved = ref(false); // Holder styr på, om indlægget er gemt
     const showComments = ref(false);
     const commentInput = ref(null);
@@ -311,7 +311,7 @@ const handleSave = async () => {
     const userRef = doc(db, 'users', user.uid); // Reference til den aktuelle bruger i Firestore
     const userSnapshot = await getDoc(userRef); // Hent brugerens data
 
-    if (userSnapshot.exists()) {
+    if (userSnapshot.exists()) { //Dermed bruger jeg kontrollen med en if statement for at sikre at dataen rent faktisk eksisterer. 
       const userData = userSnapshot.data(); // Hent brugerens data
 
       // Check om indlægget allerede er gemt

@@ -45,6 +45,7 @@
 
   <div>
     <button 
+
       :class="{ active: activeSection === 'liked' }" 
       @click="switchSection('liked')"
       id="heart">
@@ -70,6 +71,7 @@
    </div>
    
    <div class="image-grid" v-if="activeSection === 'grid'">
+  <!--  :key="post.id" bruges til at identificere hver element med en unik DOM-->
   <div class="image" v-for="post in posts" :key="post.id">
     <router-link :to="`/DeletePost/${post.id}`">
       <img :src="post.imageUrl" :alt="post.title" />
@@ -92,8 +94,6 @@
     </router-link>
   </div>
 </div>
-
-
 
      <div class="fixed-bottom-box">
     <div class="fixed-nav">
@@ -149,7 +149,6 @@ const posts = ref([]);
 const postCount = ref(0); 
 const followersCount = ref(0); 
 const followingCount = ref(0); 
-// Reactive arrays til at holde data for gemte og likede opslag
 const savedPosts = ref([]);
 const likedPosts = ref([]);
 
@@ -276,10 +275,10 @@ const fetchSavedPosts = async (uid) => {
   }
 };
 
-// Fetch liked posts by post document IDs stored in likedPosts
+// Henter alle liked post med dokumentet id i databasen. 
 const fetchLikedPosts = async (uid) => {
   try {
-    // Get the user's document from Firestore
+    // Henter alt data fra dokumentet users
     const userDocRef = doc(db, "users", uid);
     const userDoc = await getDoc(userDocRef);
 
@@ -288,7 +287,7 @@ const fetchLikedPosts = async (uid) => {
       const userData = userDoc.data();
       const likedPostIds = userData.likedPosts || []; // Array af likede post-ID'er
 
-      // Fetch the full post data for each liked post ID
+      // Henter det fulde post fra alle post id som er blivet liket
       const postsPromises = likedPostIds.map(async (postId) => {
         const postDocRef = doc(db, "posts", postId);  // Reference til post-dokumentet
         const postDoc = await getDoc(postDocRef);
@@ -302,7 +301,7 @@ const fetchLikedPosts = async (uid) => {
         }
       });
 
-      // Wait for all posts to be fetched and filter out any null results
+      // Venter på at alle post er blivet hentet og filter ud nogle resultater som er lige med null
       likedPosts.value = (await Promise.all(postsPromises)).filter(post => post !== null);
     } else {
       console.error("User document not found.");
